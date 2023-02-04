@@ -4,10 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"example.com/m/cmd/greet/app"
-	"example.com/m/pkg/logger"
 	"github.com/BurntSushi/toml"
 	"github.com/alexflint/go-arg"
+	"github.com/pluveto/flydav/cmd/flydav/app"
+	"github.com/pluveto/flydav/pkg/logger"
 )
 
 // main Entry point of the application

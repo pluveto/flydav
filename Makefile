@@ -1,5 +1,5 @@
-PROJECT_NAME=greet-app
-BIN_NAMES=greet
+PROJECT_NAME=flydav-app
+BIN_NAMES=flydav
 GOARCHS=amd64 386 arm arm64
 GOARCHS_MAC=amd64 arm64
 
@@ -57,6 +57,9 @@ package: all
 
 test:
 	go test -v ./...
+
+run:
+	go run cmd/$(APP)/main.go
 
 clean:
 	rm -rfd dist

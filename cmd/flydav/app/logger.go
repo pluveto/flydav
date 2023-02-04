@@ -3,8 +3,8 @@ package app
 import (
 	"os"
 
-	"example.com/m/pkg/logger"
 	"github.com/natefinch/lumberjack"
+	"github.com/pluveto/flydav/pkg/logger"
 	"github.com/sirupsen/logrus"
 )
 

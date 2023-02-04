@@ -3,7 +3,7 @@ level = "Warning"
 
     [[log.file]]
     format = "json"
-    path = "greet.log"
+    path = "flydav.log"
     max_size = 1 # megabytes
     max_age = 28 # days
 

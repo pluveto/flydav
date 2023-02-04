@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 
-	"example.com/m/pkg/logger"
+	"github.com/pluveto/flydav/pkg/logger"
 )
 
 func Run(args Args, conf Conf) {

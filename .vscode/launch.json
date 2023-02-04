@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/greet/main.go",
+            "program": "${workspaceFolder}/cmd/flydav/main.go",
             "args": [
                 "-v",
                 "Zhang San",

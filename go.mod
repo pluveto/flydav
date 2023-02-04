@@ -1,4 +1,4 @@
-module example.com/m
+module github.com/pluveto/flydav
 
 go 1.19
 
