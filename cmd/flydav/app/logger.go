@@ -4,12 +4,13 @@ import (
 	"os"
 
 	"github.com/natefinch/lumberjack"
+	"github.com/pluveto/flydav/cmd/flydav/conf"
 	"github.com/pluveto/flydav/pkg/logger"
 	"github.com/sirupsen/logrus"
 )
 
-func InitLogger(conf Log, verbose bool) {
-	newLoggerCount := len(conf.Stdout) + len(conf.File)
+func InitLogger(cnf conf.Log, verbose bool) {
+	newLoggerCount := len(cnf.Stdout) + len(cnf.File)
 	if newLoggerCount != 0 {
 		for i := 0; i < newLoggerCount; i++ {
 			logger.AddLogger(logrus.New())
@@ -22,33 +23,33 @@ func InitLogger(conf Log, verbose bool) {
 		// enable source code line numbers
 		logger.SetReportCaller(true)
 	} else {
-		logger.SetLevel(levelToLogrusLevel(conf.Level))
+		logger.SetLevel(levelToLogrusLevel(cnf.Level))
 	}
 
-	for _, stdout := range conf.Stdout {
+	for _, stdout := range cnf.Stdout {
 		currentLogger := logger.DefaultCombinedLogger.GetLogger(nextLoggerIndex)
 		switch stdout.Format {
-		case LogFormatJSON:
+		case conf.LogFormatJSON:
 			currentLogger.SetFormatter(&logrus.JSONFormatter{})
-		case LogFormatText:
+		case conf.LogFormatText:
 			currentLogger.SetFormatter(&logrus.TextFormatter{})
 		}
 		switch stdout.Output {
-		case LogOutputStdout:
+		case conf.LogOutputStdout:
 			currentLogger.SetOutput(os.Stdout)
-		case LogOutputStderr:
+		case conf.LogOutputStderr:
 			currentLogger.SetOutput(os.Stderr)
 		}
 		nextLoggerIndex++
 	}
 
-	for _, file := range conf.File {
+	for _, file := range cnf.File {
 		currentLogger := logger.DefaultCombinedLogger.GetLogger(nextLoggerIndex)
 
 		switch file.Format {
-		case LogFormatJSON:
+		case conf.LogFormatJSON:
 			currentLogger.SetFormatter(&logrus.JSONFormatter{})
-		case LogFormatText:
+		case conf.LogFormatText:
 			currentLogger.SetFormatter(&logrus.TextFormatter{})
 		}
 		currentLogger.SetOutput(&lumberjack.Logger{
@@ -61,4 +62,26 @@ func InitLogger(conf Log, verbose bool) {
 		nextLoggerIndex++
 	}
 
+}
+
+// levelToLogrusLevel converts a string to a logrus.Level
+func levelToLogrusLevel(level string) logrus.Level {
+	switch level {
+	case "debug":
+		return logrus.DebugLevel
+	case "info":
+		return logrus.InfoLevel
+	case "warn":
+		return logrus.WarnLevel
+	case "warning":
+		return logrus.WarnLevel
+	case "error":
+		return logrus.ErrorLevel
+	case "fatal":
+		return logrus.FatalLevel
+	case "panic":
+		return logrus.PanicLevel
+	default:
+		return logrus.InfoLevel
+	}
 }
