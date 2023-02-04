@@ -15,6 +15,10 @@ func InitLogger(cnf conf.Log, verbose bool) {
 		for i := 0; i < newLoggerCount; i++ {
 			logger.AddLogger(logrus.New())
 		}
+	} else {
+		// if no logger configured, use default logger
+		logger.SetOutput(os.Stdout)
+		return
 	}
 	nextLoggerIndex := 1
 
