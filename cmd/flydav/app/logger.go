@@ -9,6 +9,13 @@ import (
 )
 
 func InitLogger(conf Log, verbose bool) {
+	newLoggerCount := len(conf.Stdout) + len(conf.File)
+	if newLoggerCount != 0 {
+		for i := 0; i < newLoggerCount; i++ {
+			logger.AddLogger(logrus.New())
+		}
+	}
+	nextLoggerIndex := 1
 
 	if verbose {
 		logger.SetLevel(logrus.DebugLevel)
@@ -17,38 +24,41 @@ func InitLogger(conf Log, verbose bool) {
 	} else {
 		logger.SetLevel(levelToLogrusLevel(conf.Level))
 	}
+
 	for _, stdout := range conf.Stdout {
+		currentLogger := logger.DefaultCombinedLogger.GetLogger(nextLoggerIndex)
 		switch stdout.Format {
 		case LogFormatJSON:
-			logger.SetFormatter(&logrus.JSONFormatter{})
+			currentLogger.SetFormatter(&logrus.JSONFormatter{})
 		case LogFormatText:
-			logger.SetFormatter(&logrus.TextFormatter{})
+			currentLogger.SetFormatter(&logrus.TextFormatter{})
 		}
 		switch stdout.Output {
 		case LogOutputStdout:
-			logger.SetOutput(os.Stdout)
+			currentLogger.SetOutput(os.Stdout)
 		case LogOutputStderr:
-			logger.SetOutput(os.Stderr)
+			currentLogger.SetOutput(os.Stderr)
 		}
+		nextLoggerIndex++
 	}
 
-	logger.Debugf("%d stdout logger loaded", len(conf.Stdout))
-
 	for _, file := range conf.File {
+		currentLogger := logger.DefaultCombinedLogger.GetLogger(nextLoggerIndex)
+
 		switch file.Format {
 		case LogFormatJSON:
-			logger.SetFormatter(&logrus.JSONFormatter{})
+			currentLogger.SetFormatter(&logrus.JSONFormatter{})
 		case LogFormatText:
-			logger.SetFormatter(&logrus.TextFormatter{})
+			currentLogger.SetFormatter(&logrus.TextFormatter{})
 		}
-		logger.SetOutput(&lumberjack.Logger{
+		currentLogger.SetOutput(&lumberjack.Logger{
 			Filename:   file.Path,
 			MaxSize:    file.MaxSize,
 			MaxAge:     file.MaxAge,
 			MaxBackups: 3,
 			Compress:   true,
 		})
+		nextLoggerIndex++
 	}
 
-	logger.Debugf("%d file logger loaded", len(conf.File))
 }

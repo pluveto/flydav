@@ -1,6 +1,5 @@
 package app
 
-
 import "github.com/sirupsen/logrus"
 
 type Conf struct {
@@ -42,7 +41,8 @@ func GetDefaultConf() Conf {
 	return Conf{
 		Log: Log{
 			Level:  "warn",
-			Stdout: []Stdout{{Format: LogFormatJSON, Output: LogOutputStdout}},
+			Stdout: []Stdout{},
+			File:   []File{},
 		},
 	}
 }

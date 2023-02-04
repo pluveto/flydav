@@ -8,7 +8,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var combinedLogger = New()
+var DefaultCombinedLogger = New()
+
+type nothingWriter struct{}
+
+func (nothingWriter) Write(p []byte) (n int, err error) {
+	return len(p), nil
+}
+
+func init() {
+	DefaultCombinedLogger.AddHook(&logHook{})
+	var nilWrite nothingWriter
+	DefaultCombinedLogger.SetOutput(nilWrite)
+}
 
 type CombinedLogger struct {
 	*logrus.Logger
@@ -20,10 +32,26 @@ func New() *CombinedLogger {
 		Logger:            logrus.New(),
 		additionalLoggers: []*logrus.Logger{},
 	}
+
+}
+
+type logHook struct {
+}
+
+func (hook *logHook) Levels() []logrus.Level {
+	return logrus.AllLevels
+}
+
+func (hook *logHook) Fire(entry *logrus.Entry) error {
+	for _, logger := range DefaultCombinedLogger.additionalLoggers {
+		// pass entry to all additionalLoggers
+		logger.WithFields(entry.Data).Log(entry.Level, entry.Message)
+	}
+	return nil
 }
 
 func AddLogger(logger *logrus.Logger) {
-	combinedLogger.additionalLoggers = append(combinedLogger.additionalLoggers, logger)
+	DefaultCombinedLogger.additionalLoggers = append(DefaultCombinedLogger.additionalLoggers, logger)
 }
 
 func (logger *CombinedLogger) GetLogger(index int) *logrus.Logger {
@@ -56,7 +84,7 @@ func (logger *CombinedLogger) ApplyAll(fn func(*logrus.Logger)) {
 
 // SetOutput sets the standard logger output.
 func SetOutput(out io.Writer) {
-	combinedLogger.ApplyAll(
+	DefaultCombinedLogger.ApplyAll(
 		func(l *logrus.Logger) {
 			l.SetOutput(out)
 		},
@@ -65,7 +93,7 @@ func SetOutput(out io.Writer) {
 
 // SetFormatter sets the standard logger formatter.
 func SetFormatter(formatter logrus.Formatter) {
-	combinedLogger.ApplyAll(func(l *logrus.Logger) {
+	DefaultCombinedLogger.ApplyAll(func(l *logrus.Logger) {
 		l.SetFormatter(formatter)
 	})
 }
@@ -73,41 +101,41 @@ func SetFormatter(formatter logrus.Formatter) {
 // SetReportCaller sets whether the standard logger will include the calling
 // method as a field.
 func SetReportCaller(include bool) {
-	combinedLogger.ApplyAll(func(l *logrus.Logger) {
+	DefaultCombinedLogger.ApplyAll(func(l *logrus.Logger) {
 		l.SetReportCaller(include)
 	})
 }
 
 // SetLevel sets the standard logger level.
 func SetLevel(level logrus.Level) {
-	combinedLogger.ApplyAll(func(l *logrus.Logger) {
+	DefaultCombinedLogger.ApplyAll(func(l *logrus.Logger) {
 		l.SetLevel(level)
 	})
 }
 
 // GetLevel returns the standard logger level.
 func GetLevel() logrus.Level {
-	return combinedLogger.GetLevel()
+	return DefaultCombinedLogger.GetLevel()
 }
 
 // IsLevelEnabled checks if the log level of the standard logger is greater than the level param
 func IsLevelEnabled(level logrus.Level) bool {
-	return combinedLogger.IsLevelEnabled(level)
+	return DefaultCombinedLogger.IsLevelEnabled(level)
 }
 
 // AddHook adds a hook to the standard logger hooks.
 func AddHook(hook logrus.Hook) {
-	combinedLogger.AddHook(hook)
+	DefaultCombinedLogger.AddHook(hook)
 }
 
 // WithError creates an entry from the standard logger and adds an error to it, using the value defined in ErrorKey as key.
 func WithError(err error) *logrus.Entry {
-	return combinedLogger.WithField(logrus.ErrorKey, err)
+	return DefaultCombinedLogger.WithField(logrus.ErrorKey, err)
 }
 
 // WithContext creates an entry from the standard logger and adds a context to it.
 func WithContext(ctx context.Context) *logrus.Entry {
-	return combinedLogger.WithContext(ctx)
+	return DefaultCombinedLogger.WithContext(ctx)
 }
 
 // WithField creates an entry from the standard logger and adds a field to
@@ -116,7 +144,7 @@ func WithContext(ctx context.Context) *logrus.Entry {
 // Note that it doesn't log until you call Debug, Print, Info, Warn, Fatal
 // or Panic on the Entry it returns.
 func WithField(key string, value interface{}) *logrus.Entry {
-	return combinedLogger.WithField(key, value)
+	return DefaultCombinedLogger.WithField(key, value)
 }
 
 // WithFields creates an entry from the standard logger and adds multiple
@@ -126,7 +154,7 @@ func WithField(key string, value interface{}) *logrus.Entry {
 // Note that it doesn't log until you call Debug, Print, Info, Warn, Fatal
 // or Panic on the Entry it returns.
 func WithFields(fields logrus.Fields) *logrus.Entry {
-	return combinedLogger.WithFields(fields)
+	return DefaultCombinedLogger.WithFields(fields)
 }
 
 // WithTime creates an entry from the standard logger and overrides the time of
@@ -135,185 +163,185 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 // Note that it doesn't log until you call Debug, Print, Info, Warn, Fatal
 // or Panic on the Entry it returns.
 func WithTime(t time.Time) *logrus.Entry {
-	return combinedLogger.WithTime(t)
+	return DefaultCombinedLogger.WithTime(t)
 }
 
 // Trace logs a message at level Trace on the standard logger.
 func Trace(args ...interface{}) {
-	combinedLogger.Trace(args...)
+	DefaultCombinedLogger.Trace(args...)
 }
 
 // Debug logs a message at level Debug on the standard logger.
 func Debug(args ...interface{}) {
-	combinedLogger.Debug(args...)
+	DefaultCombinedLogger.Debug(args...)
 }
 
 // Print logs a message at level Info on the standard logger.
 func Print(args ...interface{}) {
-	combinedLogger.Print(args...)
+	DefaultCombinedLogger.Print(args...)
 }
 
 // Info logs a message at level Info on the standard logger.
 func Info(args ...interface{}) {
-	combinedLogger.Info(args...)
+	DefaultCombinedLogger.Info(args...)
 }
 
 // Warn logs a message at level Warn on the standard logger.
 func Warn(args ...interface{}) {
-	combinedLogger.Warn(args...)
+	DefaultCombinedLogger.Warn(args...)
 }
 
 // Warning logs a message at level Warn on the standard logger.
 func Warning(args ...interface{}) {
-	combinedLogger.Warning(args...)
+	DefaultCombinedLogger.Warning(args...)
 }
 
 // Error logs a message at level Error on the standard logger.
 func Error(args ...interface{}) {
-	combinedLogger.Error(args...)
+	DefaultCombinedLogger.Error(args...)
 }
 
 // Panic logs a message at level Panic on the standard logger.
 func Panic(args ...interface{}) {
-	combinedLogger.Panic(args...)
+	DefaultCombinedLogger.Panic(args...)
 }
 
 // Fatal logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
 func Fatal(args ...interface{}) {
-	combinedLogger.Fatal(args...)
+	DefaultCombinedLogger.Fatal(args...)
 }
 
 // TraceFn logs a message from a func at level Trace on the standard logger.
 func TraceFn(fn logrus.LogFunction) {
-	combinedLogger.TraceFn(fn)
+	DefaultCombinedLogger.TraceFn(fn)
 }
 
 // DebugFn logs a message from a func at level Debug on the standard logger.
 func DebugFn(fn logrus.LogFunction) {
-	combinedLogger.DebugFn(fn)
+	DefaultCombinedLogger.DebugFn(fn)
 }
 
 // PrintFn logs a message from a func at level Info on the standard logger.
 func PrintFn(fn logrus.LogFunction) {
-	combinedLogger.PrintFn(fn)
+	DefaultCombinedLogger.PrintFn(fn)
 }
 
 // InfoFn logs a message from a func at level Info on the standard logger.
 func InfoFn(fn logrus.LogFunction) {
-	combinedLogger.InfoFn(fn)
+	DefaultCombinedLogger.InfoFn(fn)
 }
 
 // WarnFn logs a message from a func at level Warn on the standard logger.
 func WarnFn(fn logrus.LogFunction) {
-	combinedLogger.WarnFn(fn)
+	DefaultCombinedLogger.WarnFn(fn)
 }
 
 // WarningFn logs a message from a func at level Warn on the standard logger.
 func WarningFn(fn logrus.LogFunction) {
-	combinedLogger.WarningFn(fn)
+	DefaultCombinedLogger.WarningFn(fn)
 }
 
 // ErrorFn logs a message from a func at level Error on the standard logger.
 func ErrorFn(fn logrus.LogFunction) {
-	combinedLogger.ErrorFn(fn)
+	DefaultCombinedLogger.ErrorFn(fn)
 }
 
 // PanicFn logs a message from a func at level Panic on the standard logger.
 func PanicFn(fn logrus.LogFunction) {
-	combinedLogger.PanicFn(fn)
+	DefaultCombinedLogger.PanicFn(fn)
 }
 
 // FatalFn logs a message from a func at level Fatal on the standard logger then the process will exit with status set to 1.
 func FatalFn(fn logrus.LogFunction) {
-	combinedLogger.FatalFn(fn)
+	DefaultCombinedLogger.FatalFn(fn)
 }
 
 // Tracef logs a message at level Trace on the standard logger.
 func Tracef(format string, args ...interface{}) {
-	combinedLogger.Tracef(format, args...)
+	DefaultCombinedLogger.Tracef(format, args...)
 }
 
 // Debugf logs a message at level Debug on the standard logger.
 func Debugf(format string, args ...interface{}) {
-	combinedLogger.Debugf(format, args...)
+	DefaultCombinedLogger.Debugf(format, args...)
 }
 
 // Printf logs a message at level Info on the standard logger.
 func Printf(format string, args ...interface{}) {
-	combinedLogger.Printf(format, args...)
+	DefaultCombinedLogger.Printf(format, args...)
 }
 
 // Infof logs a message at level Info on the standard logger.
 func Infof(format string, args ...interface{}) {
-	combinedLogger.Infof(format, args...)
+	DefaultCombinedLogger.Infof(format, args...)
 }
 
 // Warnf logs a message at level Warn on the standard logger.
 func Warnf(format string, args ...interface{}) {
-	combinedLogger.Warnf(format, args...)
+	DefaultCombinedLogger.Warnf(format, args...)
 }
 
 // Warningf logs a message at level Warn on the standard logger.
 func Warningf(format string, args ...interface{}) {
-	combinedLogger.Warningf(format, args...)
+	DefaultCombinedLogger.Warningf(format, args...)
 }
 
 // Errorf logs a message at level Error on the standard logger.
 func Errorf(format string, args ...interface{}) {
-	combinedLogger.Errorf(format, args...)
+	DefaultCombinedLogger.Errorf(format, args...)
 }
 
 // Panicf logs a message at level Panic on the standard logger.
 func Panicf(format string, args ...interface{}) {
-	combinedLogger.Panicf(format, args...)
+	DefaultCombinedLogger.Panicf(format, args...)
 }
 
 // Fatalf logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
 func Fatalf(format string, args ...interface{}) {
-	combinedLogger.Fatalf(format, args...)
+	DefaultCombinedLogger.Fatalf(format, args...)
 }
 
 // Traceln logs a message at level Trace on the standard logger.
 func Traceln(args ...interface{}) {
-	combinedLogger.Traceln(args...)
+	DefaultCombinedLogger.Traceln(args...)
 }
 
 // Debugln logs a message at level Debug on the standard logger.
 func Debugln(args ...interface{}) {
-	combinedLogger.Debugln(args...)
+	DefaultCombinedLogger.Debugln(args...)
 }
 
 // Println logs a message at level Info on the standard logger.
 func Println(args ...interface{}) {
-	combinedLogger.Println(args...)
+	DefaultCombinedLogger.Println(args...)
 }
 
 // Infoln logs a message at level Info on the standard logger.
 func Infoln(args ...interface{}) {
-	combinedLogger.Infoln(args...)
+	DefaultCombinedLogger.Infoln(args...)
 }
 
 // Warnln logs a message at level Warn on the standard logger.
 func Warnln(args ...interface{}) {
-	combinedLogger.Warnln(args...)
+	DefaultCombinedLogger.Warnln(args...)
 }
 
 // Warningln logs a message at level Warn on the standard logger.
 func Warningln(args ...interface{}) {
-	combinedLogger.Warningln(args...)
+	DefaultCombinedLogger.Warningln(args...)
 }
 
 // Errorln logs a message at level Error on the standard logger.
 func Errorln(args ...interface{}) {
-	combinedLogger.Errorln(args...)
+	DefaultCombinedLogger.Errorln(args...)
 }
 
 // Panicln logs a message at level Panic on the standard logger.
 func Panicln(args ...interface{}) {
-	combinedLogger.Panicln(args...)
+	DefaultCombinedLogger.Panicln(args...)
 }
 
 // Fatalln logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
 func Fatalln(args ...interface{}) {
-	combinedLogger.Fatalln(args...)
+	DefaultCombinedLogger.Fatalln(args...)
 }
