@@ -1,10 +1,24 @@
 package conf
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/pluveto/flydav/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func GetDefaultConf() Conf {
+	defaultFsDir, _ := os.Getwd()
+	if !strings.HasPrefix(defaultFsDir, "/home") {
+		webdavDir := filepath.Join(os.TempDir(), "flydav")
+		err := os.MkdirAll(webdavDir, 0755)
+		if err != nil {
+			logger.Fatal("Failed to create webdav tmp dir", err)
+		}
+		defaultFsDir = webdavDir
+	}
 	return Conf{
 		Log: Log{
 			Level:  "warn",
@@ -12,8 +26,10 @@ func GetDefaultConf() Conf {
 			File:   []File{},
 		},
 		Server: Server{
-			Host: "127.0.0.1",
-			Port: 7086,
+			Host:  "127.0.0.1",
+			Port:  7086,
+			Path:  "/webdav",
+			FsDir: defaultFsDir,
 		},
 		Auth: Auth{
 			User: []User{
