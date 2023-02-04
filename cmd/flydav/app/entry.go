@@ -9,9 +9,12 @@ import (
 
 func Run(conf conf.Conf) {
 
-	fmt.Println("Serving on:          ", fmt.Sprintf("%s:%d", conf.Server.Host, conf.Server.Port))
-	fmt.Println("Username:            ", conf.Auth.User[0].Username)
-	// fmt.Println("Password(Encrypted): ", conf.Auth.User[0].PasswordHash)
+	if len(conf.Auth.User) == 1 {
+		fmt.Println("Username:            ", conf.Auth.User[0].Username)
+		fmt.Println("Password(Encrypted): ", conf.Auth.User[0].PasswordHash)
+	}
+	fmt.Println("Address:             ", fmt.Sprintf("http://%s:%d%s", conf.Server.Host, conf.Server.Port, conf.Server.Path))
+	fmt.Println("Filesystem:          ", conf.Server.FsDir)
 
 	server := NewWebdavServer(
 		service.NewBasicAuthService(conf.Auth.User),
