@@ -59,7 +59,10 @@ func (s *WebdavServer) check() {
 	}
 
 	if !strings.HasPrefix(s.FsDir, "/home/") {
-		logger.Warn("You're using a path which isn't under /home/ as mapped directory. This may cause security issues.")
+		webdavTmpDir := filepath.Join(os.TempDir(), "flydav")
+		if !strings.HasPrefix(s.FsDir, webdavTmpDir) {
+			logger.Warn("You're using a path which isn't under /home/ as mapped directory. This may cause security issues.")
+		}
 	}
 	logger.Debug("FsDir: ", s.FsDir)
 }
