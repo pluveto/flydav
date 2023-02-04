@@ -43,6 +43,33 @@ A webdav application written in Go.
 
 To get a example configuration file, go to [conf dir](https://github.com/pluveto/flydav/blob/main/conf).
 
+## Install as a service
+
+1. Create a new file called `flydav.service` in `/etc/systemd/system/` and add the following information:
+
+File `/etc/systemd/system/flydav.service`
+
+```ini
+[Unit]
+Description = Flydav Server
+After = network.target syslog.target
+Wants = network.target
+
+[Service]
+Type = simple
+# !!! Change the user to your own user !!!
+ExecStart = /usr/bin/flydav -c /etc/flydav/flydav.toml
+
+[Install]
+WantedBy = multi-user.target
+```
+
+- Run `systemctl daemon-reload` to reload the systemd daemon.
+- Run `systemctl enable flydav` to enable the service.
+- Run `systemctl start flydav` to start the service.
+- Run `systemctl status flydav` to check the status of the service.
+- Run `systemctl stop flydav` to stop the service.
+
 ## Features
 
 - [x] Basic authentication

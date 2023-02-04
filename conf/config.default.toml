@@ -3,12 +3,12 @@ host = "0.0.0.0"
 port = 7086
 path = "/webdav"
 
-fs_dir = "davroot"
+fs_dir = "/tmp/flydav"
 [auth]
     [[auth.user]]
-    username = "flydav"
-    sub_fs_dir = "flydav"
-    sub_path = "flydav"
+    username = "pluveto"
+    sub_fs_dir = "pluveto"
+    sub_path = "pluveto"
     password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
     password_crypt = "bcrypt"
     [[auth.user]]
@@ -22,7 +22,7 @@ fs_dir = "davroot"
 level = "Warning"
     [[log.file]]
     format = "json"
-    path = "flydav.log"
+    path = "/var/log/flydav.log"
     max_size = 1 # megabytes
     max_age = 28 # days
 
