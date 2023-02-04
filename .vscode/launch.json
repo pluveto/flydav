@@ -9,13 +9,12 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}/cmd/flydav/main.go",
             "args": [
                 "-v",
-                "Zhang San",
-                "Lao Wang",
                 "-c",
-                "${workspaceFolder}/conf/config.example.toml"
+                "${workspaceFolder}/conf/config.default.toml"
             ]
         }
     ]
