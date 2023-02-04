@@ -1,0 +1,12 @@
+[log]
+level = "Warning"
+
+    [[log.file]]
+    format = "json"
+    path = "greet.log"
+    max_size = 1 # megabytes
+    max_age = 28 # days
+
+    [[log.stdout]]
+    format = "text" # or "text"
+    output = "stdout" # or "stderr"
