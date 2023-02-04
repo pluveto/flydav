@@ -2,6 +2,7 @@ package app
 
 import (
 	"os"
+	"strings"
 
 	"github.com/natefinch/lumberjack"
 	"github.com/pluveto/flydav/cmd/flydav/conf"
@@ -70,6 +71,7 @@ func InitLogger(cnf conf.Log, verbose bool) {
 
 // levelToLogrusLevel converts a string to a logrus.Level
 func levelToLogrusLevel(level string) logrus.Level {
+	level = strings.ToLower(level)
 	switch level {
 	case "debug":
 		return logrus.DebugLevel

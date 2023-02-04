@@ -29,17 +29,19 @@ A webdav application written in Go.
     - `password_hash`: The hashed password of the user.
     - `password_crypt`: The type of hashing algorithm used to hash the password. This should be set to “bcrypt”.
 - `[log]`: This section will define the logging settings for the webdav server.
-  - `level`: The log level of the server.
+  - `level`: The log level of the server. This can be set to “debug”, “info”, “warn”, “error”, or “fatal”.
   - `[[log.file]]`: This subsection will define the settings for the log file. Ignore this subsection if you do not want to log to a file.
-    - `format`: The format of the log file.
+    - `format`: The format of the log file. This can be set to “json” or “text”.
     - `path`: The path of the log file.
     - `max_size`: The maximum size of the log file in megabytes.
     - `max_age`: The maximum age of the log file in days.
   - `[[log.stdout]]`: This subsection will define the settings for the log output to the console. Ignore this subsection if you do not want to log to the console.
-    - `format`: The format of the log output.
-    - `output`: The output stream for the log output.
+    - `format`: The format of the log output. This can be set to “json” or “text”.
+    - `output`: The output stream for the log output. This can be set to “stdout” or “stderr”.
 
 4. Save the configuration file and run the FlyDav server. You should now be able to access the webdav server with the configured settings.
+
+To get a example configuration file, go to [conf dir](https://github.com/pluveto/flydav/blob/main/conf).
 
 ## Features
 
