@@ -1,14 +1,25 @@
 [server]
 host = "0.0.0.0"
 port = 7086
+path = "/webdav"
+
+fs_dir = "davroot"
 [auth]
-[[auth.user]]
-username = "flydav"
-password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
-password_crypt = "bcrypt"
+    [[auth.user]]
+    username = "flydav"
+    sub_fs_dir = "flydav"
+    sub_path = "flydav"
+    password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
+    password_crypt = "bcrypt"
+    [[auth.user]]
+    username = "admin"
+    sub_fs_dir = ""
+    sub_path = ""
+    password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
+    password_crypt = "bcrypt"
+
 [log]
 level = "Warning"
-
     [[log.file]]
     format = "json"
     path = "flydav.log"

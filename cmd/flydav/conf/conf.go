@@ -37,10 +37,14 @@ type Conf struct {
 }
 
 type Server struct {
-	Host string `toml:"host"`
-	Port int    `toml:"port"`
+	Host  string `toml:"host"`
+	Port  int    `toml:"port"`
+	Path  string `toml:"path"`
+	FsDir string `toml:"fs_dir"`
 }
 type User struct {
+	SubPath       string `toml:"sub_path"`
+	SubFsDir      string `toml:"sub_fs_dir"`
 	Username      string `toml:"username"`
 	PasswordHash  string `toml:"password_hash"`
 	PasswordCrypt string `toml:"password_crypt"`

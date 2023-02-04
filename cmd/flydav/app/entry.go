@@ -13,10 +13,9 @@ func Run(conf conf.Conf) {
 	fmt.Println("Username:            ", conf.Auth.User[0].Username)
 	// fmt.Println("Password(Encrypted): ", conf.Auth.User[0].PasswordHash)
 
-	server := &WebdavServer{
-		AuthService: &service.BasicAuthService{Users: conf.Auth.User},
-		Host:        conf.Server.Host,
-		Port:        conf.Server.Port,
-	}
+	server := NewWebdavServer(
+		service.NewBasicAuthService(conf.Auth.User),
+		conf.Server.Host, conf.Server.Port, conf.Server.Path, conf.Server.FsDir,
+	)
 	server.Listen()
 }
