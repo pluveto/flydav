@@ -1,3 +1,11 @@
+[server]
+host = "0.0.0.0"
+port = 7086
+[auth]
+[[auth.user]]
+username = "flydav"
+password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
+password_crypt = "bcrypt"
 [log]
 level = "Warning"
 
@@ -6,3 +14,7 @@ level = "Warning"
     path = "flydav.log"
     max_size = 1 # megabytes
     max_age = 28 # days
+
+    [[log.stdout]]
+    format = "text" # or "text"
+    output = "stdout" # or "stderr"
