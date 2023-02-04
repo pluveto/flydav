@@ -53,7 +53,10 @@ func overrideConf(cnf *conf.Conf, args app.Args) {
 	if args.Host != "" {
 		cnf.Server.Host = args.Host
 	}
-	if args.Username != "" {
+	if args.Username == "" {
+		args.Username = "flydav"
+	}
+	if args.Config == "" {
 		cnf.Auth.User = []conf.User{
 			{
 				Username:      args.Username,
@@ -68,14 +71,14 @@ func promptPassword(username string) string {
 	var err error
 	var password []byte
 	MIN_PASS_LEN := 9
-	fmt.Printf("Set a temporary password for user %s (more than %d chars): ", username, MIN_PASS_LEN)
+	fmt.Printf("Set a temporary password for user %s (at least %d chars): ", username, MIN_PASS_LEN)
 	for {
 		password, err = term.ReadPassword(int(os.Stdin.Fd()))
 		fmt.Println()
-		if err == nil && len(password) > MIN_PASS_LEN {
+		if err == nil && len(password) >= MIN_PASS_LEN {
 			break
 		}
-		fmt.Printf("Invalid password. Must be more than %d chars. Try agin: ", MIN_PASS_LEN)
+		fmt.Printf("Invalid password. Must be at least %d chars. Try agin: ", MIN_PASS_LEN)
 	}
 	b, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(b)
