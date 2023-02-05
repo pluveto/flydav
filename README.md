@@ -1,6 +1,8 @@
 # Flydav
 
-A webdav application written in Go.
+FlyDav is an lightweight and open source webdav server that offers some core features to meet the needs of both individual users and organizations.
+
+With its tiny file size, FlyDav is the ideal solution for users who require a fast and efficient webdav server. It offers basic authentication, supports multiple users and allows each user to have a different root directory and path prefix which are extremely well isolated. In addition, FlyDav provides logging rotation and password security, making it the perfect choice for users who require a secure and reliable webdav solution.
 
 ## Get started in 30 seconds
 
