@@ -17,7 +17,7 @@ windows: prepare
 		[ -z "$$BIN_NAME" ] && continue; \
 		for GOARCH in $(GOARCHS); do \
 			mkdir -p dist/windows_$$GOARCH; \
-			OOSG=windows GOARCH=$$GOARCH go build -o dist/windows_$$GOARCH/$$BIN_NAME.exe cmd/$$BIN_NAME/main.go; \
+			GOOS=windows GOARCH=$$GOARCH go build -o dist/windows_$$GOARCH/$$BIN_NAME.exe cmd/$$BIN_NAME/main.go; \
 		done \
 	done
 
