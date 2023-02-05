@@ -1,5 +1,7 @@
 # Flydav
 
+Other languages documentation: [中文文档](docs/README.zh-CN.md)
+
 FlyDav is an lightweight and open source webdav server that offers some core features to meet the needs of both individual users and organizations.
 
 With its tiny file size, FlyDav is the ideal solution for users who require a fast and efficient webdav server. It offers basic authentication, supports multiple users and allows each user to have a different root directory and path prefix which are extremely well isolated. In addition, FlyDav provides logging rotation and password security, making it the perfect choice for users who require a secure and reliable webdav solution.
@@ -78,7 +80,7 @@ Wants = network.target
 
 [Service]
 Type = simple
-# !!! Change the user to your own user !!!
+# !!! Change the binary location and config path to your own !!!
 ExecStart = /usr/bin/flydav -c /etc/flydav/flydav.toml
 
 [Install]
