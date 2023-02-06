@@ -1,10 +1,12 @@
 # Flydav
 
-Other languages documentation: [中文文档](docs/README.zh-CN.md)
+Documents in other languages: [中文文档](docs/README.zh-CN.md)
 
 FlyDav is an lightweight and open source webdav server that offers some core features to meet the needs of both individual users and organizations.
 
 With its tiny file size, FlyDav is the ideal solution for users who require a fast and efficient webdav server. It offers basic authentication, supports multiple users and allows each user to have a different root directory and path prefix which are extremely well isolated. In addition, FlyDav provides logging rotation and password security, making it the perfect choice for users who require a secure and reliable webdav solution.
+
+The goal of FlyDav is to keep things easy and simple, with users able to deploy the service in no time. Therefore any extraneous features are not added, thus avoiding bloat.
 
 ## Get started in 30 seconds
 
@@ -103,7 +105,9 @@ WantedBy = multi-user.target
 - [x] Different root directory for each user
 - [x] Different path prefix for each user
 - [x] Logging
-- [ ] SSL - You can use a reverse proxy like Nginx to enable SSL.
+- [ ] SSL
+    - Work in progress
+    - You can use a reverse proxy like Nginx to enable SSL.
 
 ## License
 
