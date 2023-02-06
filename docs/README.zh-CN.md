@@ -92,6 +92,22 @@ WantedBy = multi-user.target
 3. 运行 `systemctl enable flydav` 来启用该服务。
 4. 运行 `systemctl start flydav` 来启动服务。
 
+## 一键安装
+
+运行:
+
+```bash
+curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo bash
+```
+
+开启代理方式运行：
+
+```bash
+curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
+```
+
+然后按照提示输入配置信息，完成安装。
+
 ### 管理该服务
 
 - 运行 `systemctl status flydav` 来检查服务的状态。
@@ -104,9 +120,9 @@ WantedBy = multi-user.target
 - [x] 每个用户的根目录不同
 - [x] 每个用户有不同的路径前缀
 - [x] 日志
-- [ ] SSL 
-    - 正在支持
-    - 你可以使用 Nginx 这样的反向代理来启用 SSL
+- [ ] SSL
+  - 正在支持
+  - 你可以使用 Nginx 这样的反向代理来启用 SSL
 
 ## 许可证
 

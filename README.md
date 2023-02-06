@@ -83,7 +83,7 @@ Wants = network.target
 [Service]
 Type = simple
 # !!! Change the binary location and config path to your own !!!
-ExecStart = /usr/bin/flydav -c /etc/flydav/flydav.toml
+ExecStart = /usr/local/bin/flydav -c /etc/flydav/flydav.toml
 
 [Install]
 WantedBy = multi-user.target
@@ -98,6 +98,22 @@ WantedBy = multi-user.target
 - Run `systemctl status flydav` to check the status of the service.
 - Run `systemctl stop flydav` to stop the service.
 
+## One-click install
+
+Run:
+
+```bash
+curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo bash
+```
+
+Or with proxy
+
+```bash
+curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
+```
+
+And interactive to configure the service.
+
 ## Features
 
 - [x] Basic authentication
@@ -106,8 +122,8 @@ WantedBy = multi-user.target
 - [x] Different path prefix for each user
 - [x] Logging
 - [ ] SSL
-    - Work in progress
-    - You can use a reverse proxy like Nginx to enable SSL.
+  - Work in progress
+  - You can use a reverse proxy like Nginx to enable SSL.
 
 ## License
 
