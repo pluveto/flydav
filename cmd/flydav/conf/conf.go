@@ -9,6 +9,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type HashMethond string
+
+const BcryptHash HashMethond = "bcrypt"
+const SHA256Hash HashMethond = "sha256"
+
 func GetDefaultConf() Conf {
 	defaultFsDir, _ := os.Getwd()
 	if !strings.HasPrefix(defaultFsDir, "/home") {
@@ -39,7 +44,7 @@ func GetDefaultConf() Conf {
 						b, _ := bcrypt.GenerateFromPassword([]byte("flydav"), bcrypt.DefaultCost)
 						return string(b)
 					})(),
-					PasswordCrypt: "bcrypt",
+					PasswordCrypt: BcryptHash,
 				},
 			},
 		},
@@ -72,11 +77,11 @@ type UI struct {
 }
 
 type User struct {
-	SubPath       string `toml:"sub_path"`
-	SubFsDir      string `toml:"sub_fs_dir"`
-	Username      string `toml:"username"`
-	PasswordHash  string `toml:"password_hash"`
-	PasswordCrypt string `toml:"password_crypt"`
+	SubPath       string      `toml:"sub_path"`
+	SubFsDir      string      `toml:"sub_fs_dir"`
+	Username      string      `toml:"username"`
+	PasswordHash  string      `toml:"password_hash"`
+	PasswordCrypt HashMethond `toml:"password_crypt"`
 }
 type Auth struct {
 	User []User `toml:"user"`

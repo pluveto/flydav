@@ -1,6 +1,7 @@
 package service
 
 import (
+	"crypto/sha256"
 	"errors"
 
 	"github.com/pluveto/flydav/cmd/flydav/conf"
@@ -21,7 +22,8 @@ func NewBasicAuthService(users []conf.User) *BasicAuthService {
 }
 
 var (
-	ErrCrendential = errors.New("invalid username or password")
+	ErrCrendential           = errors.New("invalid username or password")
+	ErrUnsupportedHashMethod = errors.New("unsupported hash method")
 )
 
 func (s *BasicAuthService) Authenticate(username, password string) error {
@@ -29,11 +31,25 @@ func (s *BasicAuthService) Authenticate(username, password string) error {
 	if !ok {
 		return ErrCrendential
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
-	if user.Username == username && err == nil {
-		return nil
+	hashMethod := user.PasswordCrypt
+	// todo: sha256
+	switch hashMethod {
+	case conf.BcryptHash:
+		err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+		if user.Username == username && err == nil {
+			return nil
+		}
+	case conf.SHA256Hash:
+		sha256 := sha256.New()
+		sha256.Write([]byte(password))
+		if user.Username == username && user.PasswordHash == string(sha256.Sum(nil)) {
+			return nil
+		}
+	default:
+		return ErrUnsupportedHashMethod
 	}
 	return ErrCrendential
+
 }
 
 func (s *BasicAuthService) GetAuthorizedSubDir(username string) (string, error) {
