@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/pluveto/flydav/cmd/flydav/conf"
 	"github.com/pluveto/flydav/cmd/flydav/service"
@@ -20,5 +21,8 @@ func Run(conf conf.Conf) {
 		service.NewBasicAuthService(conf.Auth.User),
 		conf.Server.Host, conf.Server.Port, conf.Server.Path, conf.Server.FsDir,
 	)
+	if conf.UI.Enabled {
+		http.Handle(conf.UI.Path, http.FileServer(http.Dir(conf.UI.Source)))
+	}
 	server.Listen()
 }

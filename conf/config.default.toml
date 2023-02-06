@@ -2,8 +2,13 @@
 host = "0.0.0.0"
 port = 7086
 path = "/webdav"
-
 fs_dir = "/tmp/flydav"
+
+[ui]
+enabled = false
+path = "/ui"
+source = "/usr/share/flydav/ui"
+
 [auth]
 
     # add more users here

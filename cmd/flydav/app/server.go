@@ -105,6 +105,7 @@ func (s *WebdavServer) Listen() {
 
 		davHandler.ServeHTTP(w, r)
 	})
+
 	addr := fmt.Sprintf("%s:%d", s.Host, s.Port)
 	err := http.ListenAndServe(addr, nil)
 	logger.Fatal("failed to listen and serve on", addr, ":", err)

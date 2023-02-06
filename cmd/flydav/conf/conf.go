@@ -43,6 +43,11 @@ func GetDefaultConf() Conf {
 				},
 			},
 		},
+		UI: UI{
+			Enabled: false,
+			Path:    "/ui",
+			Source:  "",
+		},
 	}
 }
 
@@ -50,6 +55,7 @@ type Conf struct {
 	Log    Log    `toml:"log"`
 	Server Server `toml:"server"`
 	Auth   Auth   `toml:"auth"`
+	UI     UI     `toml:"ui"`
 }
 
 type Server struct {
@@ -58,6 +64,13 @@ type Server struct {
 	Path  string `toml:"path"`
 	FsDir string `toml:"fs_dir"`
 }
+
+type UI struct {
+	Enabled bool   `toml:"enabled"`
+	Path    string `toml:"path"`   // Path prefix. TODO: ui.path cannot equals to server.path
+	Source  string `toml:"source"` // Source location of the UI
+}
+
 type User struct {
 	SubPath       string `toml:"sub_path"`
 	SubFsDir      string `toml:"sub_fs_dir"`
