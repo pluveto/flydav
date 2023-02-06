@@ -5,18 +5,9 @@ path = "/webdav"
 
 fs_dir = "/tmp/flydav"
 [auth]
-    [[auth.user]]
-    username = "pluveto"
-    sub_fs_dir = "pluveto"
-    sub_path = "pluveto"
-    password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
-    password_crypt = "bcrypt"
-    [[auth.user]]
-    username = "admin"
-    sub_fs_dir = ""
-    sub_path = ""
-    password_hash = "$2a$12$boxh0Exvu8TMwdsPx6uwsuRq4fq7UmulJ8OrXn41uOkO7U96.O.ly"
-    password_crypt = "bcrypt"
+
+    # add more users here
+    # note: the above line is required by auto install script, do not delete.
 
 [log]
 level = "Warning"
