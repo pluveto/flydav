@@ -53,6 +53,9 @@ func GetDefaultConf() Conf {
 			Path:    "/ui",
 			Source:  "",
 		},
+		CORS: CORS{
+			Enabled: false,
+		},
 	}
 }
 
@@ -61,6 +64,17 @@ type Conf struct {
 	Server Server `toml:"server"`
 	Auth   Auth   `toml:"auth"`
 	UI     UI     `toml:"ui"`
+	CORS   CORS   `toml:"cors"`
+}
+
+type CORS struct {
+	Enabled          bool     `toml:"enabled"`
+	AllowedOrigins   []string `toml:"allowed_origins"`
+	AllowedMethods   []string `toml:"allowed_methods"`
+	AllowedHeaders   []string `toml:"allowed_headers"`
+	ExposedHeaders   []string `toml:"exposed_headers"`
+	AllowCredentials bool     `toml:"allow_credentials"`
+	MaxAge           int
 }
 
 type Server struct {

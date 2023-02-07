@@ -24,6 +24,7 @@ type WebdavServer struct {
 	Port        int
 	Path        string
 	FsDir       string
+	Middlewares []func(http.HandlerFunc) http.HandlerFunc
 }
 
 func NewWebdavServer(authService AuthService, host string, port int, path string, fsDir string) *WebdavServer {
@@ -34,6 +35,10 @@ func NewWebdavServer(authService AuthService, host string, port int, path string
 		Path:        path,
 		FsDir:       fsDir,
 	}
+}
+
+func (s *WebdavServer) AddMiddleware(middleware func(http.HandlerFunc) http.HandlerFunc) {
+	s.Middlewares = append(s.Middlewares, middleware)
 }
 
 func (s *WebdavServer) check() {
@@ -67,11 +72,21 @@ func (s *WebdavServer) check() {
 	logger.Debug("FsDir: ", s.FsDir)
 }
 
+func (s *WebdavServer) wrapHandler(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		for _, middleware := range s.Middlewares {
+			h = middleware(h)
+		}
+		h(w, r)
+	}
+}
+
 func (s *WebdavServer) Listen() {
 	s.check()
 
 	lock := webdav.NewMemLS()
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", s.wrapHandler(func(w http.ResponseWriter, r *http.Request) {
+
 		username, password, ok := r.BasicAuth()
 		if !ok {
 			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
@@ -104,7 +119,7 @@ func (s *WebdavServer) Listen() {
 		}
 
 		davHandler.ServeHTTP(w, r)
-	})
+	}))
 
 	addr := fmt.Sprintf("%s:%d", s.Host, s.Port)
 	err := http.ListenAndServe(addr, nil)

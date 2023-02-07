@@ -2,9 +2,11 @@ package service
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 
 	"github.com/pluveto/flydav/cmd/flydav/conf"
+	"github.com/pluveto/flydav/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,6 +31,7 @@ var (
 func (s *BasicAuthService) Authenticate(username, password string) error {
 	user, ok := s.UserMap[username]
 	if !ok {
+		logger.Debug("no such user: ", username)
 		return ErrCrendential
 	}
 	hashMethod := user.PasswordCrypt
@@ -39,12 +42,15 @@ func (s *BasicAuthService) Authenticate(username, password string) error {
 		if user.Username == username && err == nil {
 			return nil
 		}
+		logger.Debug("bcrypt compare error: ", err)
 	case conf.SHA256Hash:
-		sha256 := sha256.New()
-		sha256.Write([]byte(password))
-		if user.Username == username && user.PasswordHash == string(sha256.Sum(nil)) {
+		gen := sha256.New()
+		gen.Write([]byte(password))
+		expectedHash := hex.EncodeToString(gen.Sum(nil))
+		if user.Username == username && user.PasswordHash == expectedHash {
 			return nil
 		}
+		logger.Debug("sha256 compare error, expected hash: ", user.PasswordHash, ", actual hash: ", expectedHash)
 	default:
 		return ErrUnsupportedHashMethod
 	}
