@@ -70,6 +70,13 @@ const App = (): JSX.Element => {
       })
 
       setFiles(filesUnwrapped);
+    }).catch(r => {
+      console.log(r);
+      if(r.status == 404) {
+        alert("not found");
+        setPath("/")
+      }
+    }).finally(() => {
       setLoading(false);
     });
   }, [path]);
@@ -99,8 +106,8 @@ const App = (): JSX.Element => {
   return (
     <main className={styles.main}>
       {
-        showSettingsModal && 
-          <Settings
+        showSettingsModal &&
+        <Settings
           initialValue={settingsData}
           onSave={
             (settings) => {
@@ -111,8 +118,8 @@ const App = (): JSX.Element => {
             }
           }
           onDiscard={() => setShowSettingsModal(false)}
-          ></Settings>
-        
+        ></Settings>
+
       }
       <header className="flex justify-between items-center p-4 border-b border-gray-300">
         <h3 className="text-2xl font-light">
@@ -121,9 +128,9 @@ const App = (): JSX.Element => {
         <div className="flex">
           <input type="text" className={styles.searchFileInput} placeholder="Search files">
           </input>
-          <button 
-          onClick={() => setShowSettingsModal(true)}
-          className={sharedStyles.buttonDefault} >Settings</button>
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className={sharedStyles.buttonDefault} >Settings</button>
         </div>
       </header>
 
@@ -132,7 +139,9 @@ const App = (): JSX.Element => {
         <div className="flex items-center">
           <button className={sharedStyles.buttonDefault} onClick={() => setPath(dirname(path))}>To parent</button>
           <input type="text" className={styles.pathInput} value={pathUncommitted} onChange={(e) => setPathUncommitted(e.target.value)}></input>
-          <button className={sharedStyles.buttonPrimary} onClick={() => setPath("/")}>Go</button>
+          <button className={sharedStyles.buttonPrimary} onClick={() => setPath(
+            pathUncommitted
+          )}>Go</button>
         </div>
       </section>
       <section className="p-4">
@@ -142,9 +151,9 @@ const App = (): JSX.Element => {
             <div className={styles.fileListSizeCell}>Size</div>
             <div className={styles.fileListLastmodCell}>Last Modified</div>
           </div>
-          { loading && <div className="p-4">
+          {loading && <div className="p-4">
             Loading...
-            </div>}
+          </div>}
           {
             files.filter(file => file.type == "directory").map((file: FileStatExtended, idx, arr) => {
               return (
