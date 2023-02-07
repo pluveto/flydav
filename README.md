@@ -14,6 +14,12 @@ The goal of FlyDav is to keep things easy and simple, with users able to deploy 
 2. Run `./flydav -H 0.0.0.0` to start the server. Then you'll input the password for the default user `flydav`.
 3. Open `http://YOUR_IP:7086/webdav` in your webdav client such as RaiDrive.
 
+## FlyDav UI
+
+We provided a simple web page client, which supports browsing and downloading files.
+
+![image-20230207233418753](https://raw.githubusercontent.com/pluveto/0images/master/2023/02/upgit_20230207_1675784061.png)
+
 ## Command line options
 
 ```bash
