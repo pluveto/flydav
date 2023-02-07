@@ -51,7 +51,7 @@ $ flydav -h
         - `sub_fs_dir': 用户可以访问的 fs_dir 的子目录。
         - `sub_path`: 用户访问 webdav 服务器的路径
         - `password_hash`: 用户的散列密码。
-        - `password_crypt`: 用于哈希密码的哈希算法的类型。这应该被设置为 "bcrypt"。
+        - `password_crypt`: 用于哈希密码的哈希算法的类型。这应该被设置为 "bcrypt" 或 "sha256"。
     - `[log]`: 这一部分将定义 webdav 服务器的日志设置。
     - `level`: 服务器的日志级别。这可以设置为 "debug"、"info"、"warning"、"error" 或 "fatal"。
     - `[[log.file]]`。这个小节将定义日志文件的设置。如果你不想将日志记录到一个文件中，请忽略这个小节。

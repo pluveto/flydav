@@ -51,7 +51,7 @@ If you want to quickly start the server with host, port, username and a one-time
         - `sub_fs_dir`: The subdirectory of the fs_dir to which the user will have access.
         - `sub_path`: The path that the user will access the webdav server from.
         - `password_hash`: The hashed password of the user.
-        - `password_crypt`: The type of hashing algorithm used to hash the password. This should be set to “bcrypt”.
+        - `password_crypt`: The type of hashing algorithm used to hash the password. This should be set to “bcrypt” or “sha256”.
     - `[log]`: This section will define the logging settings for the webdav server.
     - `level`: The log level of the server. This can be set to “debug”, “info”, “warn”, “error”, or “fatal”.
     - `[[log.file]]`: This subsection will define the settings for the log file. Ignore this subsection if you do not want to log to a file.
