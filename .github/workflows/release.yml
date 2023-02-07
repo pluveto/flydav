@@ -47,7 +47,7 @@ jobs:
           cd ui
           yarn install
           yarn build
-          zip -r ui-dist.zip dist
+          zip -r flydav-ui-dist.zip dist
           cp flydav-ui-dist.zip ../dist
 
       - name: Create Tag
