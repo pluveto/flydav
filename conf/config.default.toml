@@ -25,3 +25,12 @@ level = "Warning"
     [[log.stdout]]
     format = "text" # or "text"
     output = "stdout" # or "stderr"
+
+[cors]
+enabled = true
+allowed_origins = ["*"]
+allowed_methods = ["GET", "POST", "PUT", "DELETE", "PROPFIND", "PROPPATCH", "MKCOL", "COPY", "MOVE", "LOCK", "UNLOCK", "OPTIONS", "HEAD", "PATCH"]
+allowed_headers = ["*"]
+exposed_headers = ["*"]
+allow_credentials = true
+max_age = 86400 # seconds
