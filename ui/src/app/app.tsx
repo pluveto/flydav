@@ -1,9 +1,11 @@
 
 import styles from "./app.module.css";
+import sharedStyles from "../shared.module.css"
 
 import { AuthType, createClient, FileStat, ResponseDataDetailed } from "webdav";
 import React from "react";
 import ProgressBar from "components/progress_bar";
+import Settings, { SettingsObject } from "./settings";
 
 const client = createClient("http://localhost:7086/webdav", {
   authType: AuthType.Password,
@@ -36,8 +38,25 @@ const App = (): JSX.Element => {
   const [files, setFiles] = React.useState<FileStatExtended[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [downloadProgress, setDownloadProgress] = React.useState(0);
+  const [showSettingsModal, setShowSettingsModal] = React.useState(false);
+
+  const [settingsData, setSettingsData] = React.useState<SettingsObject>({
+    url: "http://localhost:7086/webdav",
+    username: "flydav",
+    password: "pass-for-testing"
+  })
+
+  // try load settings from localStorage
+  React.useEffect(() => {
+    const settings = localStorage.getItem("settings")
+    if (settings) {
+      setSettingsData(JSON.parse(settings))
+    }
+  }, [])
+
   React.useEffect(() => {
     setLoading(true);
+    setFiles([])
     pathUncommitted != path && setPathUncommitted(path);
     client.getDirectoryContents(path).then((files: FileStat[] | ResponseDataDetailed<FileStat[]>) => {
       // if is ResponseDataDetailed, unwrap
@@ -63,8 +82,8 @@ const App = (): JSX.Element => {
       },
     }) as Buffer
     saveBuffer(buff, file.basename)
-
   }
+
   const saveBuffer = (buf: Buffer, filename: string) => {
     const a = document.createElement('a');
     a.style.display = 'none';
@@ -79,6 +98,22 @@ const App = (): JSX.Element => {
   };
   return (
     <main className={styles.main}>
+      {
+        showSettingsModal && 
+          <Settings
+          initialValue={settingsData}
+          onSave={
+            (settings) => {
+              setSettingsData(settings);
+              // save to localStorage
+              localStorage.setItem("settings", JSON.stringify(settings));
+              setShowSettingsModal(false);
+            }
+          }
+          onDiscard={() => setShowSettingsModal(false)}
+          ></Settings>
+        
+      }
       <header className="flex justify-between items-center p-4 border-b border-gray-300">
         <h3 className="text-2xl font-light">
           FlyDav UI
@@ -86,16 +121,18 @@ const App = (): JSX.Element => {
         <div className="flex">
           <input type="text" className={styles.searchFileInput} placeholder="Search files">
           </input>
-          <button className={styles.buttonDefault} >Settings</button>
+          <button 
+          onClick={() => setShowSettingsModal(true)}
+          className={sharedStyles.buttonDefault} >Settings</button>
         </div>
       </header>
 
       {downloadProgress > 0 && downloadProgress < 100 && <ProgressBar current={downloadProgress} total={100}></ProgressBar>}
       <section className="p-4">
         <div className="flex items-center">
-          <button className={styles.buttonDefault} onClick={() => setPath(dirname(path))}>To parent</button>
+          <button className={sharedStyles.buttonDefault} onClick={() => setPath(dirname(path))}>To parent</button>
           <input type="text" className={styles.pathInput} value={pathUncommitted} onChange={(e) => setPathUncommitted(e.target.value)}></input>
-          <button className={styles.buttonPrimary} onClick={() => setPath("/")}>Go</button>
+          <button className={sharedStyles.buttonPrimary} onClick={() => setPath("/")}>Go</button>
         </div>
       </section>
       <section className="p-4">
@@ -105,7 +142,9 @@ const App = (): JSX.Element => {
             <div className={styles.fileListSizeCell}>Size</div>
             <div className={styles.fileListLastmodCell}>Last Modified</div>
           </div>
-
+          { loading && <div className="p-4">
+            Loading...
+            </div>}
           {
             files.filter(file => file.type == "directory").map((file: FileStatExtended, idx, arr) => {
               return (
