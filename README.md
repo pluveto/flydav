@@ -8,6 +8,25 @@ With its tiny file size, FlyDav is the ideal solution for users who require a fa
 
 The goal of FlyDav is to keep things easy and simple, with users able to deploy the service in no time. Therefore any extraneous features are not added, thus avoiding bloat.
 
+
+## One-Run install
+
+**WARN** Only for AMD64 Linux with systemd. Enhancement PR is welcomed.
+
+Run:
+
+```bash
+curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo bash
+```
+
+Or with proxy
+
+```bash
+curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
+```
+
+And interactive to configure the service.
+
 ## Get started in 30 seconds
 
 1. Start by downloading FlyDav from their website at [release page](https://github.com/pluveto/flydav/releases).
@@ -103,22 +122,6 @@ WantedBy = multi-user.target
 
 - Run `systemctl status flydav` to check the status of the service.
 - Run `systemctl stop flydav` to stop the service.
-
-## One-click install
-
-Run:
-
-```bash
-curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo bash
-```
-
-Or with proxy
-
-```bash
-curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
-```
-
-And interactive to configure the service.
 
 ## Features
 
