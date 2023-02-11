@@ -7,6 +7,8 @@
 
 DOWNLOADER="curl"
 
+# ------------------ common ------------------
+
 get_downloader() {
     if [ -x "$(command -v curl)" ]; then
         DOWNLOADER="curl"
@@ -14,6 +16,13 @@ get_downloader() {
         DOWNLOADER="wget"
     else
         echo "No downloader found. Please install curl or wget."
+        exit 1
+    fi
+}
+
+must_has() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "This script requires $1 but it's not installed. Aborting."
         exit 1
     fi
 }
@@ -39,10 +48,23 @@ must_be_linux() {
     fi
 }
 
+
+supported_platforms=(
+    linux-386
+    linux-amd64
+    linux-arm
+    linux-arm64
+    mac-amd64
+    mac-arm64
+)
+
+# ------------------ adhoc ------------------
+
 REPO_API=https://api.github.com/repos/pluveto/flydav
 REPO=https://github.com/pluveto/flydav
 VERSION=
 DEBUG=1
+
 get_latest_release() {
     echo "Getting latest release from $REPO_API"
     if [ "$DOWNLOADER" = "curl" ]; then
@@ -61,6 +83,10 @@ clean_up() {
         rm -rfd /tmp/flydav_install
     fi
 }
+
+
+must_has unzip
+
 
 get_downloader
 
@@ -260,8 +286,8 @@ if ! id -u flydav >/dev/null 2>&1; then
     must_run useradd -r -s /bin/false flydav
 fi
 
-# if TMP_USER_FS_ROOT is not empty
-if [ -n "$TMP_USER_FS_ROOT" ]; then
+# if TMP_USER_FS_ROOT is not existing
+if [ ! -d "$TMP_USER_FS_ROOT" ]; then
 
     echo "Creating directory $TMP_USER_FS_ROOT"
     must_run mkdir -p "$TMP_USER_FS_ROOT"
