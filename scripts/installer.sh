@@ -126,7 +126,7 @@ fi
 
 must_run unzip /tmp/flydav_install/flydav.zip -d /tmp/flydav_install
 
-must_run chmod +x /tmp/flydav_install/dist/linux_amd64/flydav
+must_run chmod +x /tmp/flydav_install/dist/linux_$(ARCH)/flydav
 
 
 DOWNLOAD_CONFIG=1
@@ -259,7 +259,7 @@ EOF
 fi
 
 echo "Installing binary"
-must_run mv "/tmp/flydav_install/dist/linux_amd64/flydav" "/usr/local/bin/flydav"
+must_run mv "/tmp/flydav_install/dist/linux_${ARCH}/flydav" "/usr/local/bin/flydav"
 
 # check if service is already installed
 if [ -f /etc/systemd/system/flydav.service ]; then
