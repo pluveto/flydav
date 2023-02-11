@@ -16,13 +16,13 @@ The goal of FlyDav is to keep things easy and simple, with users able to deploy 
 Run:
 
 ```bash
-curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/pluveto/flydav/main/scripts/installer.sh | sudo bash
 ```
 
 Or with proxy
 
 ```bash
-curl -s https://raw.githubusercontent.com/pluveto/flydav/main/scripts/install.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
+curl -sL https://raw.githubusercontent.com/pluveto/flydav/main/scripts/installer.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
 ```
 
 And interactive to configure the service.
