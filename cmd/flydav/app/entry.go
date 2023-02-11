@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/pluveto/flydav/cmd/flydav/conf"
@@ -10,7 +11,6 @@ import (
 )
 
 func Run(conf conf.Conf) {
-
 	if len(conf.Auth.User) == 1 {
 		fmt.Println("Username:            ", conf.Auth.User[0].Username)
 		fmt.Println("Password(Encrypted): ", conf.Auth.User[0].PasswordHash)
@@ -22,9 +22,7 @@ func Run(conf conf.Conf) {
 		service.NewBasicAuthService(conf.Auth.User),
 		conf.Server.Host, conf.Server.Port, conf.Server.Path, conf.Server.FsDir,
 	)
-	if conf.UI.Enabled {
-		http.Handle(conf.UI.Path, http.FileServer(http.Dir(conf.UI.Source)))
-	}
+
 	if conf.CORS.Enabled {
 		server.AddMiddleware(func(next http.HandlerFunc) http.HandlerFunc {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +44,24 @@ func Run(conf conf.Conf) {
 				next.ServeHTTP(w, r)
 			})
 		})
+	}
+
+	if conf.UI.Enabled {
+		prefix := filepath.Join(conf.UI.Path)
+		// http.Handle(prefix, http.StripPrefix(prefix, http.FileServer(http.Dir(conf.UI.Source))))
+		server.AddMiddleware(func(next http.HandlerFunc) http.HandlerFunc {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if strings.HasPrefix(r.URL.Path, prefix) {
+					http.StripPrefix(prefix, http.FileServer(http.Dir(conf.UI.Source))).ServeHTTP(w, r)
+					return
+				}
+				if strings.HasPrefix(r.URL.Path, "/assets") {
+					http.StripPrefix("/assets", http.FileServer(http.Dir(conf.UI.Source+"/assets"))).ServeHTTP(w, r)
+				}
+				next.ServeHTTP(w, r)
+			})
+		})
+		fmt.Println("UI:                  ", fmt.Sprintf("http://%s:%d%s", conf.Server.Host, conf.Server.Port, conf.UI.Path))
 	}
 	server.Listen()
 }

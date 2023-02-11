@@ -86,7 +86,7 @@ func (s *WebdavServer) Listen() {
 
 	lock := webdav.NewMemLS()
 	http.HandleFunc("/", s.wrapHandler(func(w http.ResponseWriter, r *http.Request) {
-
+		logger.Info("request: ", r.Method, r.URL.Path)
 		username, password, ok := r.BasicAuth()
 		if !ok {
 			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
