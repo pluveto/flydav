@@ -2,16 +2,12 @@
 import styles from "./app.module.css";
 import sharedStyles from "../shared.module.css"
 
-import { AuthType, createClient, FileStat, ResponseDataDetailed } from "webdav";
+import { AuthType, createClient, FileStat, ResponseDataDetailed, WebDAVClient } from "webdav";
 import React from "react";
 import ProgressBar from "components/progress_bar";
 import Settings, { SettingsObject } from "./settings";
 
-const client = createClient("http://localhost:7086/webdav", {
-  authType: AuthType.Password,
-  username: "flydav",
-  password: "pass-for-testing" // sha256: 8c024a1ccc39abc26d05bacc4ab64b78ad4c4378e67df31975d5303ca2258a22
-});
+
 
 const dirname = (path: String) => {
   let ret = path.replace(/\\/g, '/').replace(/\/[^/]*$/, '');
@@ -36,33 +32,55 @@ const App = (): JSX.Element => {
   const [path, setPath] = React.useState<string>("/");
   const [pathUncommitted, setPathUncommitted] = React.useState<string>("/");
   const [files, setFiles] = React.useState<FileStatExtended[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<string>("Loading");
   const [downloadProgress, setDownloadProgress] = React.useState(0);
   const [showSettingsModal, setShowSettingsModal] = React.useState(false);
+  const [refreshFlag, setRefreshFlag] = React.useState(false);
 
   const [settingsData, setSettingsData] = React.useState<SettingsObject>({
-    url: "http://localhost:7086/webdav",
-    username: "flydav",
-    password: "pass-for-testing"
+    url: "",
+    username: "",
+    password: ""
   })
+
+  const [client, setClient] = React.useState<WebDAVClient | null>(null)
 
   // try load settings from localStorage
   React.useEffect(() => {
-    const settings = localStorage.getItem("settings")
-    if (settings) {
-      setSettingsData(JSON.parse(settings))
+    const settingsStr = localStorage.getItem("settings")
+    if (settingsStr) {
+      let settings = JSON.parse(settingsStr)
+      setSettingsData(settings)
+      console.log("loaded settings from localStorage: ", settingsData)
+    } else {
+      console.log("no settings in localStorage")
+      setShowSettingsModal(true)
     }
   }, [])
 
   React.useEffect(() => {
-    setLoading(true);
+    if (settingsData.url == "") return;
+    setClient(createClient(settingsData.url, {
+      username: settingsData.username,
+      password: settingsData.password,
+      authType: AuthType.Password
+    }))
+  }, [settingsData])
+
+  React.useEffect(() => {
+    setRefreshFlag(false);
+    setLoading("Loading");
     setFiles([])
     pathUncommitted != path && setPathUncommitted(path);
-    client.getDirectoryContents(path).then((files: FileStat[] | ResponseDataDetailed<FileStat[]>) => {
+    console.log("client: ", client);
+
+    client?.getDirectoryContents(path).then((files: FileStat[] | ResponseDataDetailed<FileStat[]>) => {
       // if is ResponseDataDetailed, unwrap
       if (!Array.isArray(files)) {
         alert("Error: unexpected response type")
       }
+      console.log("files: ", files);
+      
       let filesUnwrapped = files as FileStatExtended[];
 
       filesUnwrapped.map(f => {
@@ -72,17 +90,17 @@ const App = (): JSX.Element => {
       setFiles(filesUnwrapped);
     }).catch(r => {
       console.log(r);
-      if(r.status == 404) {
-        alert("not found");
+      if (r.status == 404) {
         setPath("/")
+        setLoading("Not found. Check settings.");
       }
     }).finally(() => {
-      setLoading(false);
+      setLoading("");
     });
-  }, [path]);
+  }, [path, client, refreshFlag]);
 
   async function handleClickFile(file: FileStat) {
-    const buff: Buffer = await client.getFileContents(file.filename, {
+    const buff: Buffer = await client?.getFileContents(file.filename, {
       format: "binary",
       onDownloadProgress: e => {
         setDownloadProgress(e.loaded / e.total * 100)
@@ -142,6 +160,9 @@ const App = (): JSX.Element => {
           <button className={sharedStyles.buttonPrimary} onClick={() => setPath(
             pathUncommitted
           )}>Go</button>
+          <span className="mr-2"></span>
+          <button className={sharedStyles.buttonDefault} onClick={() => { setRefreshFlag(true) }} >Refresh</button>
+
         </div>
       </section>
       <section className="p-4">
@@ -157,7 +178,7 @@ const App = (): JSX.Element => {
           {
             files.filter(file => file.type == "directory").map((file: FileStatExtended, idx, arr) => {
               return (
-                <div className={styles.fileListItem}>
+                <div className={styles.fileListItem} key={file.filename}>
                   <div className={styles.fileListCell}>
                     <svg className={styles.fileListIcon} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#e79f2d" viewBox="0 0 16 16">
                       <path d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z" />
@@ -174,7 +195,7 @@ const App = (): JSX.Element => {
           {
             files.filter(file => file.type == "file").map((file: FileStat, idx, arr) => {
               return (
-                <div className={styles.fileListItem}>
+                <div className={styles.fileListItem} key={file.filename}>
                   <div className={styles.fileListCell}>
                     <svg className={styles.fileListIcon} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                       <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
