@@ -126,7 +126,7 @@ fi
 
 must_run unzip /tmp/flydav_install/flydav.zip -d /tmp/flydav_install
 
-must_run chmod +x /tmp/flydav_install/dist/linux_$(ARCH)/flydav
+must_run chmod +x /tmp/flydav_install/dist/linux_${ARCH}/flydav
 
 
 DOWNLOAD_CONFIG=1
