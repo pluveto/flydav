@@ -26,7 +26,7 @@ And interactive to configure the service.
 Finally remove tmp file.
 
 ```bash
-sduo rm -f /tmp/flydav-installer.sh
+sudo rm -f /tmp/flydav-installer.sh
 ```
 
 ## Get started in 30 seconds
