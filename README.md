@@ -11,21 +11,23 @@ The goal of FlyDav is to keep things easy and simple, with users able to deploy 
 
 ## One-Run install
 
-**WARN** Only for AMD64 Linux with systemd. Enhancement PR is welcomed.
+**WARN** Only tested for AMD64 Linux with systemd. Enhancement PR is welcomed.
 
 Run:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/pluveto/flydav/main/scripts/installer.sh | sudo bash
-```
-
-Or with proxy
-
-```bash
-curl -sL https://raw.githubusercontent.com/pluveto/flydav/main/scripts/installer.sh | sudo http_proxy=http://192.168.56.1:7890 https_proxy=http://192.168.56.1:7890 bash
+curl -sL "https://raw.githubusercontent.com/pluveto/flydav/main/scripts/installer.sh" -o /tmp/flydav-installer.sh
+sudo chmod +x /tmp/flydav-installer.sh
+sudo bash
 ```
 
 And interactive to configure the service.
+
+Finally remove tmp file.
+
+```bash
+sduo rm -f /tmp/flydav-installer.sh
+```
 
 ## Get started in 30 seconds
 
