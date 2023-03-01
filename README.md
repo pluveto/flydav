@@ -18,7 +18,7 @@ Run:
 ```bash
 curl -sL "https://raw.githubusercontent.com/pluveto/flydav/main/scripts/installer.sh" -o /tmp/flydav-installer.sh
 sudo chmod +x /tmp/flydav-installer.sh
-sudo bash
+sudo bash /tmp/flydav-installer.sh
 ```
 
 And interactive to configure the service.
