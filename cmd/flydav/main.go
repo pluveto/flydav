@@ -10,9 +10,11 @@ import (
 	"github.com/pluveto/flydav/cmd/flydav/app"
 	"github.com/pluveto/flydav/cmd/flydav/conf"
 	"github.com/pluveto/flydav/pkg/logger"
+	"github.com/pluveto/flydav/pkg/misc"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/term"
+	"gopkg.in/yaml.v3"
 )
 
 // main Entry point of the application
@@ -107,10 +109,28 @@ func loadConfValid(path string, defaultConf conf.Conf, defaultConfPath string) c
 	if _, err := os.Stat(preferredPath); err == nil {
 		path = preferredPath
 	}
-	_, err := toml.DecodeFile(path, &defaultConf)
+	err := decode(path, &defaultConf)
 	if err != nil {
 		logger.Warn("failed to load config file: ", err, " using default config")
 	}
 	logger.WithField("conf", &defaultConf).Debug("configuration loaded")
 	return defaultConf
+}
+
+func decode(path string, conf *conf.Conf) (error) {
+	ext, err := misc.MustGetFileExt(path)
+	if err != nil {
+		return err
+	}
+
+	switch ext {
+	case ".toml":
+		_, err = toml.DecodeFile(path, conf)
+	case ".yaml", ".yml":
+		err = yaml.Unmarshal([]byte(path), conf)
+	default:
+		err = fmt.Errorf("unsupported config file extension: %s", ext)
+	}
+
+	return err
 }
