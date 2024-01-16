@@ -9,7 +9,7 @@ on:
       prerelease:
         type: boolean
         required: false
-        default: yes
+        default: true
         
 jobs:
   build:
