@@ -136,6 +136,15 @@ WantedBy = multi-user.target
   - Work in progress
   - You can use a reverse proxy like Nginx to enable SSL.
 
+## Setup on your OS
+
+### Ubuntu
+
+Simply add a new location as follow:
+
+![image](https://github.com/pluveto/flydav/assets/50045289/bcd02371-5baf-45a8-ad84-702bfc29d971)
+
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
