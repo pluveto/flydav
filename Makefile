@@ -41,12 +41,12 @@ mac: prepare
 
 package: all
 	for GOARCH in $(GOARCHS); do \
-		zip -q -r dist/$(PROJECT_NAME)-windows-$$GOARCH.zip dist/windows_$$GOARCH/; \
-		zip -q -r dist/$(PROJECT_NAME)-linux-$$GOARCH.zip dist/linux_$$GOARCH/; \
+		(cd dist/windows_$$GOARCH/ && zip -q -r ../../dist/$(PROJECT_NAME)-windows-$$GOARCH.zip .); \
+		(cd dist/linux_$$GOARCH/ && zip -q -r ../../dist/$(PROJECT_NAME)-linux-$$GOARCH.zip .); \
 	done
 
 	for GOARCH in $(GOARCHS_MAC); do \
-		zip -q -r dist/$(PROJECT_NAME)-mac-$$GOARCH.zip dist/mac_$$GOARCH/; \
+		(cd dist/mac_$$GOARCH/ && zip -q -r ../../dist/$(PROJECT_NAME)-mac-$$GOARCH.zip .); \
 	done
 
 	ARCH_RELEASE_DIRS=$$(find dist -type d -name "*_*"); \
