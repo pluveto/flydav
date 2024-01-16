@@ -60,52 +60,52 @@ func GetDefaultConf() Conf {
 }
 
 type Conf struct {
-	Log    Log    `toml:"log"`
-	Server Server `toml:"server"`
-	Auth   Auth   `toml:"auth"`
-	UI     UI     `toml:"ui"`
-	CORS   CORS   `toml:"cors"`
+	Log    Log    `toml:"log" yaml:"log"`
+	Server Server `toml:"server" yaml:"server"`
+	Auth   Auth   `toml:"auth" yaml:"auth"`
+	UI     UI     `toml:"ui" yaml:"ui"`
+	CORS   CORS   `toml:"cors" yaml:"cors"`
 }
 
 type CORS struct {
-	Enabled          bool     `toml:"enabled"`
-	AllowedOrigins   []string `toml:"allowed_origins"`
-	AllowedMethods   []string `toml:"allowed_methods"`
-	AllowedHeaders   []string `toml:"allowed_headers"`
-	ExposedHeaders   []string `toml:"exposed_headers"`
-	AllowCredentials bool     `toml:"allow_credentials"`
+	Enabled          bool     `toml:"enabled" yaml:"enabled"`
+	AllowedOrigins   []string `toml:"allowed_origins" yaml:"allowed_origins"`
+	AllowedMethods   []string `toml:"allowed_methods" yaml:"allowed_methods"`
+	AllowedHeaders   []string `toml:"allowed_headers" yaml:"allowed_headers"`
+	ExposedHeaders   []string `toml:"exposed_headers" yaml:"exposed_headers"`
+	AllowCredentials bool     `toml:"allow_credentials" yaml:"allow_credentials"`
 	MaxAge           int
 }
 
 type Server struct {
-	Host  string `toml:"host"`
-	Port  int    `toml:"port"`
-	Path  string `toml:"path"`
-	FsDir string `toml:"fs_dir"`
+	Host  string `toml:"host" yaml:"host"`
+	Port  int    `toml:"port" yaml:"port"`
+	Path  string `toml:"path" yaml:"path"`
+	FsDir string `toml:"fs_dir" yaml:"fs_dir"`
 }
 
 type UI struct {
-	Enabled bool   `toml:"enabled"`
-	Path    string `toml:"path"`   // Path prefix. TODO: ui.path cannot equals to server.path
-	Source  string `toml:"source"` // Source location of the UI
+	Enabled bool   `toml:"enabled" yaml:"enabled"`
+	Path    string `toml:"path" yaml:"path"`   // Path prefix. TODO: ui.path cannot equals to server.path
+	Source  string `toml:"source" yaml:"source"` // Source location of the UI
 }
 
 type User struct {
-	SubPath       string      `toml:"sub_path"`
-	SubFsDir      string      `toml:"sub_fs_dir"`
-	Username      string      `toml:"username"`
-	PasswordHash  string      `toml:"password_hash"`
-	PasswordCrypt HashMethond `toml:"password_crypt"`
+	SubPath       string      `toml:"sub_path" yaml:"sub_path"`
+	SubFsDir      string      `toml:"sub_fs_dir" yaml:"sub_fs_dir"`
+	Username      string      `toml:"username" yaml:"username"`
+	PasswordHash  string      `toml:"password_hash" yaml:"password_hash"`
+	PasswordCrypt HashMethond `toml:"password_crypt" yaml:"password_crypt"`
 }
 type Auth struct {
-	User []User `toml:"user"`
+	User []User `toml:"user" yaml:"user"`
 }
 
 type File struct {
-	Format  LogFormat `toml:"format"`
-	Path    string    `toml:"path"`
-	MaxSize int       `toml:"max_size"`
-	MaxAge  int       `toml:"max_age"`
+	Format  LogFormat `toml:"format" yaml:"format"`
+	Path    string    `toml:"path" yaml:"path"`
+	MaxSize int       `toml:"max_size" yaml:"max_size"`
+	MaxAge  int       `toml:"max_age" yaml:"max_age"`
 }
 
 type LogFormat string
@@ -124,11 +124,11 @@ const (
 )
 
 type Stdout struct {
-	Format LogFormat `toml:"format"`
-	Output LogOutput `toml:"output"`
+	Format LogFormat `toml:"format" yaml:"format"`
+	Output LogOutput `toml:"output" yaml:"output"`
 }
 type Log struct {
-	Level  string   `toml:"level"`
-	File   []File   `toml:"file"`
-	Stdout []Stdout `toml:"stdout"`
+	Level  string   `toml:"level" yaml:"level"`
+	File   []File   `toml:"file" yaml:"file"`
+	Stdout []Stdout `toml:"stdout" yaml:"stdout"`
 }

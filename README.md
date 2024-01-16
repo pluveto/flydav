@@ -8,7 +8,6 @@ With its tiny file size, FlyDav is the ideal solution for users who require a fa
 
 The goal of FlyDav is to keep things easy and simple, with users able to deploy the service in no time. Therefore any extraneous features are not added, thus avoiding bloat.
 
-
 ## One-Run install
 
 **WARN** Only tested for AMD64 Linux with systemd. Enhancement PR is welcomed.
@@ -46,13 +45,14 @@ We provided a simple web page client, which supports browsing and downloading fi
 ```bash
 $ flydav -h
 --------------------------------------------------------------------------------
-Usage: flydav [--host HOST] [--port PORT] [--user USER] [--verbose] [--config CONFIG]
+Usage: flydav [--host HOST] [--port PORT] [--user USER] [--verbose] [--config CONFIG] [--with-ui] [--help] [--version]
 
 Options:
   --host HOST, -H HOST   host address
   --port PORT, -p PORT   port
   --user USER, -u USER   username
   --verbose, -v          verbose output
+  --with-ui              enable web ui
   --config CONFIG, -c CONFIG
                          config file
   --help, -h             display this help and exit
@@ -143,7 +143,6 @@ WantedBy = multi-user.target
 Simply add a new location as follow:
 
 ![image](https://github.com/pluveto/flydav/assets/50045289/bcd02371-5baf-45a8-ad84-702bfc29d971)
-
 
 ## License
 

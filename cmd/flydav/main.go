@@ -67,6 +67,9 @@ func overrideConf(cnf *conf.Conf, args app.Args) {
 			},
 		}
 	}
+	if args.EnabledUI {
+		cnf.UI.Enabled = true
+	}
 }
 
 func promptPassword(username string) string {

@@ -6,4 +6,5 @@ type Args struct {
 	Username string `arg:"-u,--user" help:"username"`
 	Verbose  bool   `arg:"-v,--verbose" help:"verbose output"`
 	Config   string `arg:"-c,--config" help:"config file"`
+	EnabledUI bool   `arg:"--with-ui" help:"enable web ui"`
 }
