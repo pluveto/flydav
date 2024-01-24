@@ -25,7 +25,14 @@ func main() {
 	var defaultConf = conf.GetDefaultConf()
 
 	args = loadArgsValid()
-	cnf = loadConfValid(args.Config, defaultConf, "config.toml")
+	if args.Verbose {
+		fmt.Printf("args: %+v\n", args)
+	}
+
+	cnf = loadConfValid(args.Verbose, args.Config, defaultConf, "config.toml")
+	if args.Verbose {
+		fmt.Printf("conf: %+v\n", cnf)
+	}
 	overrideConf(&cnf, args)
 	validateConf(&cnf)
 	app.InitLogger(cnf.Log, args.Verbose)
@@ -103,20 +110,29 @@ func getAppDir() string {
 	return filepath.Dir(dir)
 }
 
-func loadConfValid(path string, defaultConf conf.Conf, defaultConfPath string) conf.Conf {
+func loadConfValid(verbose bool, path string, defaultConf conf.Conf, defaultConfPath string) conf.Conf {
 	if path == "" {
 		path = defaultConfPath
+		if verbose {
+			fmt.Println("no config file specified, using default config file: ", path)
+		}
 	}
 	// app executable dir + config.toml has the highest priority
 	preferredPath := filepath.Join(getAppDir(), path)
 	if _, err := os.Stat(preferredPath); err == nil {
 		path = preferredPath
+		if verbose {
+			fmt.Println("using config file: ", path)
+		}
 	}
+
 	err := decode(path, &defaultConf)
-	if err != nil {
-		logger.Warn("failed to load config file: ", err, " using default config")
+	if err != nil && verbose {
+		os.Stderr.WriteString(fmt.Sprintf("Failed to load config file: %s\n", err))
+	}else
+	{
+		logger.WithField("conf", &defaultConf).Debug("configuration loaded")
 	}
-	logger.WithField("conf", &defaultConf).Debug("configuration loaded")
 	return defaultConf
 }
 
@@ -127,10 +143,18 @@ func decode(path string, conf *conf.Conf) (error) {
 	}
 
 	switch ext {
-	case ".toml":
+	case "toml":
 		_, err = toml.DecodeFile(path, conf)
-	case ".yaml", ".yml":
-		err = yaml.Unmarshal([]byte(path), conf)
+	case "yaml", "yml":
+		content, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("failed to read config file: %s", err)
+		}
+		
+		err = yaml.Unmarshal([]byte(content), conf)
+		if err != nil {
+			return fmt.Errorf("failed to parse config file: %s", err)
+		}
 	default:
 		err = fmt.Errorf("unsupported config file extension: %s", ext)
 	}

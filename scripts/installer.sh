@@ -327,5 +327,3 @@ echo "Starting systemd service"
 must_run systemctl start flydav.service
 
 echo "Installation complete"
-
-

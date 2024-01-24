@@ -41,7 +41,7 @@ func GetDefaultConf() Conf {
 				{
 					Username: "flydav",
 					PasswordHash: (func() string {
-						b, _ := bcrypt.GenerateFromPassword([]byte("flydav"), bcrypt.DefaultCost)
+						b, _ := bcrypt.GenerateFromPassword([]byte("flydavdefaultpassword"), bcrypt.DefaultCost)
 						return string(b)
 					})(),
 					PasswordCrypt: BcryptHash,

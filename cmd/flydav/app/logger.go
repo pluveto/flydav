@@ -11,6 +11,9 @@ import (
 )
 
 func InitLogger(cnf conf.Log, verbose bool) {
+	if(verbose){
+		println("verbose mode enabled")
+	}
 	newLoggerCount := len(cnf.Stdout) + len(cnf.File)
 	if newLoggerCount != 0 {
 		for i := 0; i < newLoggerCount; i++ {
@@ -18,6 +21,9 @@ func InitLogger(cnf conf.Log, verbose bool) {
 		}
 	} else {
 		// if no logger configured, use default logger
+		if(verbose){
+			println("no logger configured, use default logger")
+		}
 		logger.SetOutput(os.Stdout)
 		return
 	}
@@ -28,6 +34,7 @@ func InitLogger(cnf conf.Log, verbose bool) {
 		// enable source code line numbers
 		logger.SetReportCaller(true)
 	} else {
+		println("Verbose mode disabled")
 		logger.SetLevel(levelToLogrusLevel(cnf.Level))
 	}
 
