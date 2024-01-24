@@ -1,0 +1,81 @@
+hub:
+  host: 0.0.0.0
+  port: 7000
+  tls:
+    enabled: false
+    cert: /etc/flydav/cert.pem
+    key: /etc/flydav/key.pem
+    ca: /etc/flydav/ca.pem
+
+services:
+  core:
+    path: /api
+    cors:
+      enabled: true
+      origins:
+        - '*'
+    backend:
+      local:
+        enabled: true
+        path: /tmp/flydav
+      s3:
+        enabled: false
+        endpoint: 'https://localhost:9000'
+        access_key: ''
+
+    log:
+      enabled: true
+      level: debug
+      path: /var/log/flydav/api.log
+
+  webdav:
+    enabled: true
+    path: /webdav
+
+  http_index:
+    enabled: true
+    path: /data
+
+  ui:
+    enabled: false
+    path: /app
+
+  auth:
+    path: /auth
+    log:
+      enabled: true
+      path: /var/log/flydav/auth.log
+    backends:
+      static:
+        enabled: true
+        superuser:
+          username: admin
+          password: admin
+        users:
+          - name: alice
+            password: $2a$12$B6g1T0ScZSNThpU8TY6Egesf8IYNOxiow41mXuuogSN5FoA4utQ9i
+            scopes:
+              - path: /shared
+                permissions:
+                  - read
+              - path: /home/alice
+                permissions:
+                  - read
+                  - write
+              - path: /home/alice/.metadata
+                permissions:
+                  - read
+
+          - name: bob
+            password: $2a$12$LOlhUfqWGsABgwVHmHy2nuMKnTV3rOKBwMY.u.T1pSjnp8Z21j0Cm
+            scopes:
+              - path: /shared
+                permissions:
+                  - read
+              - path: /home/bob
+                permissions:
+                  - read
+                  - write
+              - path: /home/bob/.metadata
+                permissions:
+                  - read

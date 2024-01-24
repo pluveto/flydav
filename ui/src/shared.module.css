@@ -1,7 +1,0 @@
-
-.buttonPrimary {
-  @apply ml-2 px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600;
-}
-.buttonDefault {
-  @apply mr-2 px-2 py-1.5 bg-gray-200 rounded hover:bg-gray-300;
-}
