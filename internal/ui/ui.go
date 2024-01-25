@@ -2,12 +2,30 @@
 package ui
 
 import (
-    "flydav/cmd/flydav/internal/config"
-    // 其他必要的包
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/pluveto/flydav/internal/config"
+	"github.com/pluveto/flydav/internal/logger"
 )
 
-func Start(cfg config.UIConfig) {
-    // 设置UI服务的路由和处理器
-    // 启动服务
-    // ...
+type UIModule struct {
+	Config config.UIConfig
+	// 可能还有其他的状态或依赖
+}
+
+func NewUIModule(cfg config.UIConfig) *UIModule {
+	return &UIModule{
+		Config: cfg,
+	}
+}
+
+func (uis *UIModule) RegisterRoutes(router *mux.Router) {
+	router.PathPrefix("/app").Handler(
+		http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+}
+
+func (uis *UIModule) Start() error {
+	logger.Info("Starting UI Module")
+	return nil
 }

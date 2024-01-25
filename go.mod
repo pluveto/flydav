@@ -16,6 +16,8 @@ require (
 require (
 	github.com/alexflint/go-scalar v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/exgalibas/logrus-filename v0.0.0-20230106110712-c320f793ed5a
+	github.com/gorilla/mux v1.8.1
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect

@@ -7,6 +7,11 @@ hub:
     key: /etc/flydav/key.pem
     ca: /etc/flydav/ca.pem
 
+log:
+  enabled: true
+  level: debug
+  path: api.log
+
 services:
   core:
     path: /api
@@ -17,7 +22,7 @@ services:
     backend:
       local:
         enabled: true
-        path: /tmp/flydav
+        base_dir: ./data
       s3:
         enabled: false
         endpoint: 'https://localhost:9000'
@@ -26,7 +31,7 @@ services:
     log:
       enabled: true
       level: debug
-      path: /var/log/flydav/api.log
+      path: api.log
 
   webdav:
     enabled: true
@@ -44,14 +49,25 @@ services:
     path: /auth
     log:
       enabled: true
-      path: /var/log/flydav/auth.log
+      path: auth.log
     backends:
+      ldap:
+        enabled: false
+      local:
+        enabled: false
       static:
         enabled: true
         superuser:
           username: admin
           password: admin
         users:
+          - username: anonymous
+            password:
+            scopes:
+              - path: /shared
+                permissions:
+                  - read
+
           - name: alice
             password: $2a$12$B6g1T0ScZSNThpU8TY6Egesf8IYNOxiow41mXuuogSN5FoA4utQ9i
             scopes:

@@ -2,13 +2,27 @@
 package core
 
 import (
-    "flydav/cmd/flydav/internal/config"
-    // 其他必要的包
+	"github.com/gorilla/mux"
+	"github.com/pluveto/flydav/internal/config"
+	"github.com/pluveto/flydav/internal/logger"
 )
 
-func Start(cfg config.CoreConfig) {
-    // 设置路由
-    // 初始化业务逻辑处理器
-    // 启动HTTP服务
-    // ...
+type CoreModule struct {
+	Config config.CoreConfig
+	// 可能还有其他的状态或依赖
+}
+
+func NewCoreModule(cfg config.CoreConfig) *CoreModule {
+	return &CoreModule{
+		Config: cfg,
+	}
+}
+
+func (cm *CoreModule) RegisterRoutes(router *mux.Router) {
+	// 实现注册路由的逻辑
+}
+
+func (cm *CoreModule) Start() error {
+	logger.Info("Starting Core Module")
+	return nil
 }
