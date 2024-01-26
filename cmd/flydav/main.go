@@ -77,5 +77,5 @@ func printRoutes(router *mux.Router) {
 		return nil
 	})
 
-	logger.Info("\n_routes: \n", s)
+	logger.Info("\nregistered_routes: \n", s)
 }
