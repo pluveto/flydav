@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
+	"io/fs"
 	"net/http"
 	"path"
 	"strconv"
@@ -15,6 +17,8 @@ import (
 	"github.com/pluveto/flydav/internal/config"
 	"github.com/pluveto/flydav/internal/logger"
 	"github.com/pluveto/flydav/pkg/storage"
+	"github.com/pluveto/flydav/pkg/util"
+	"github.com/pluveto/flydav/res"
 )
 
 type HTTPIndexModule struct {
@@ -34,25 +38,28 @@ func NewHTTPIndexModule(cfg config.HTTPIndexConfig, store storage.Storage, auth 
 func (his *HTTPIndexModule) RegisterRoutes(router *mux.Router) {
 	logger.Info("Registering HTTP Index module routes on " + his.Config.Path)
 	router.PathPrefix(his.Config.Path).HandlerFunc(his.handleHTTPIndex)
+	router.PathPrefix("/_flydav").HandlerFunc(his.handleStatic)
 }
 
-// Directory listing template.
-const dirListTemplate = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Index of {{ .Path }}</title>
-</head>
-<body>
-    <h1>Index of {{ .Path }}</h1>
-    <ul>
-        {{ range .Contents }}
-        <li><a href="{{ .FullName }}">{{ .Name }}</a></li>
-        {{ end }}
-    </ul>
-</body>
-</html>
-`
+func (his *HTTPIndexModule) handleStatic(w http.ResponseWriter, r *http.Request) {
+	requestPath, err := his.getRequestPath(r)
+	logger.Info("HTTP Index request for path: " + requestPath)
+	if err != nil {
+		http.Error(w, "Invalid request path", http.StatusBadRequest)
+		return
+	}
+
+	logger.Info("HTTP Index request for path: " + requestPath)
+	sub, err := fs.Sub(res.Static, "static")
+
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		logger.Error("Error accessing path: ", err)
+		return
+	}
+
+	http.StripPrefix("/_flydav", http.FileServer(http.FS(sub))).ServeHTTP(w, r)
+}
 
 // TemplateData holds data for rendering the directory listing template.
 type TemplateData struct {
@@ -104,11 +111,57 @@ func (his *HTTPIndexModule) handleHTTPIndex(w http.ResponseWriter, r *http.Reque
 	// Check the Accept header to determine the response format.
 	acceptHeader := r.Header.Get("Accept")
 	if strings.Contains(acceptHeader, "text/html") {
-		// Respond with HTML.
-		tmpl, err := template.New("index").Parse(dirListTemplate)
+
+		dirListTemplateFile, err := res.Static.Open("static/http_index/dir_list.template.html")
+
 		if err != nil {
+			ents, _ := res.Static.ReadDir("static")
+			list := ""
+			for _, ent := range ents {
+				list += ent.Name() + " "
+			}
+			logger.Error("Error opening template: ", err, ", available: "+list)
+			http.Error(w, "Error opening template", http.StatusInternalServerError)
+			return
+		}
+
+		// Respond with HTML.
+		dirListTemplateBytes, err := io.ReadAll(dirListTemplateFile)
+		if err != nil {
+			logger.Error("Error reading template: ", err)
+			http.Error(w, "Error reading template", http.StatusInternalServerError)
+			return
+		}
+
+		index := template.New("index")
+		index.Funcs(template.FuncMap{
+			"split":       strings.Split,
+			"format_size": func(size int64) string { return util.FormatSize(size, 2, " ") },
+			"build_link": func(path string) string {
+				return util.JoinURL(his.Config.Path, path)
+			},
+		})
+		tmpl, err := index.Parse(string(dirListTemplateBytes))
+		if err != nil {
+			logger.Error("Error creating template: ", err)
 			http.Error(w, "Error creating template", http.StatusInternalServerError)
 			return
+		}
+
+		// append . and .. if not root
+		if requestPath != "/" {
+			contents = append([]storage.Metadata{
+				{
+					Name:     ".",
+					FullName: path.Join(requestPath, "."),
+					IsDir:    true,
+				},
+				{
+					Name:     "..",
+					FullName: path.Join(requestPath, ".."),
+					IsDir:    true,
+				},
+			}, contents...)
 		}
 
 		data := TemplateData{

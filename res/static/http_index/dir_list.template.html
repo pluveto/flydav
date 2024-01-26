@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Index of {{ .Path }}</title>
+    <style>
+        html {
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        li:hover {
+            background-color: #e5e5e5;
+        }
+
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .file-link {
+            color: #333333;
+            text-decoration: none;
+            flex-grow: 1;
+        }
+
+        footer {
+            margin-top: 20px;
+            color: #999999;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #999999;
+        }
+
+        footer a:hover {
+            color: #666666;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Index of {{ .Path }}</h1>
+    <ul>
+        {{ range .Contents }}
+        <li>
+            {{- if .IsDir }}
+            <img src="/_flydav/flowbite-icons/src/outline/file_folders/folder.svg" alt="Folder Icon" class="file-icon">
+            <a href="{{ build_link .FullName }}" class="file-link">{{ .Name }}</a>
+            {{- else -}}
+            {{- $ext := index (split .Name ".") 1 -}}
+            {{- $icon := "" -}}
+            {{- if eq $ext "svg" -}}
+            {{- $icon = "file.svg" -}}
+            {{- else if eq $ext "txt" -}}
+            {{- $icon = "file-text.svg" -}}
+            {{- else if eq $ext "pdf" -}}
+            {{- $icon = "file-pdf.svg" -}}
+            {{- else if eq $ext "doc" -}}
+            {{- $icon = "file-word.svg" -}}
+            {{- else if eq $ext "xls" -}}
+            {{- $icon = "file-excel.svg" -}}
+            {{- else if eq $ext "ppt" -}}
+            {{- $icon = "file-powerpoint.svg" -}}
+            {{- else if eq $ext "jpg" "jpeg" "png" "gif" -}}
+            {{- $icon = "file-image.svg" -}}
+            {{- else if eq $ext "mp3" "wav" "flac" -}}
+            {{- $icon = "file-audio.svg" -}}
+            {{- else if eq $ext "mp4" "mov" "avi" -}}
+            {{- $icon = "file-video.svg" -}}
+            {{- else if eq $ext "zip" "rar" "7z" -}}
+            {{- $icon = "file-archive.svg" -}}
+            {{- else -}}
+            {{- $icon = "file.svg" -}}
+            {{- end -}}
+            <img src="/_flydav/flowbite-icons/src/outline/file_folders/{{ $icon }}" alt="File Icon" class="file-icon">
+            <a href="{{ build_link .FullName }}" class="file-link">{{ .Name }}</a>
+            <span title="{{ .Size }}">{{ format_size .Size }}</span>
+            {{- end }}
+        </li>
+        {{ end }}
+    </ul>
+    <footer>
+        <p>Powered by
+            <a href="https://github.com/pluveto/flydav" target="_blank" rel="noopener noreferrer" title="FlyDav">
+                FlyDav
+            </a>
+        </p>
+    </footer>
+</body>
+
+</html>
