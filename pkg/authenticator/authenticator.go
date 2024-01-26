@@ -44,7 +44,7 @@ func (sa *StaticAuthenticator) Authenticate(username, password string) (bool, er
 
 func (sa *StaticAuthenticator) Authorize(username, path string, permission config.Permission) (bool, error) {
 	user, exists := sa.Users[username]
-	logger.Info("authorizing user: ", user, " for path: ", path, " with permission: ", permission)
+	logger.Info("authorizing user: ", username, " for path: ", path, " with permission: ", permission)
 	if !exists {
 		return false, nil
 	}
