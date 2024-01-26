@@ -13,9 +13,9 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/pluveto/flydav/internal/auth"
 	"github.com/pluveto/flydav/internal/config"
 	"github.com/pluveto/flydav/internal/logger"
+	"github.com/pluveto/flydav/pkg/authenticator"
 	"github.com/pluveto/flydav/pkg/storage"
 	"github.com/pluveto/flydav/pkg/util"
 	"github.com/pluveto/flydav/res"
@@ -24,10 +24,10 @@ import (
 type HTTPIndexModule struct {
 	Config  config.HTTPIndexConfig
 	Storage storage.Storage
-	Auth    *auth.AuthModule
+	Auth    authenticator.Authenticator
 }
 
-func NewHTTPIndexModule(cfg config.HTTPIndexConfig, store storage.Storage, auth *auth.AuthModule) *HTTPIndexModule {
+func NewHTTPIndexModule(cfg config.HTTPIndexConfig, store storage.Storage, auth authenticator.Authenticator) *HTTPIndexModule {
 	return &HTTPIndexModule{
 		Config:  cfg,
 		Storage: store,
@@ -76,8 +76,8 @@ func (his *HTTPIndexModule) handleHTTPIndex(w http.ResponseWriter, r *http.Reque
 	}
 
 	username := "anonymous"
-	permission := config.ReadPermission
-	ok, err := his.Auth.Authenticator.Authorize(username, requestPath, permission)
+	permission := config.PermissionRead
+	ok, err := his.Auth.Authorize(username, requestPath, permission)
 	if err != nil {
 		http.Error(w, "Error checking permissions", http.StatusInternalServerError)
 		logger.Error("Error checking permissions: ", err)

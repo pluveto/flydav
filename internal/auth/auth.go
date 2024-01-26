@@ -20,7 +20,7 @@ type AuthModule struct {
 func NewAuthModule(cfg config.AuthConfig) *AuthModule {
 	var auth authenticator.Authenticator
 	if cfg.Backends.Static.Enabled {
-		auth = authenticator.NewStaticAuthenticator(cfg.Backends.Static.Users)
+		auth = authenticator.NewStaticAuthenticator(cfg.Backends.Static)
 	}
 	// 这里可以添加其他认证方法的初始化
 	return &AuthModule{

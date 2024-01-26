@@ -3,8 +3,8 @@ package config
 type Permission string
 
 const (
-	ReadPermission  Permission = "read"
-	WritePermission Permission = "write"
+	PermissionRead  Permission = "read"
+	PermissionWrite Permission = "write"
 )
 
 type UserScope struct {
@@ -15,6 +15,7 @@ type UserScope struct {
 type StaticUser struct {
 	Username string      `yaml:"username"`
 	Password string      `yaml:"password"`
+	RootDir  string      `yaml:"root_dir"`
 	Scopes   []UserScope `yaml:"scopes"`
 }
 

@@ -10,19 +10,26 @@ import (
 type Authenticator interface {
 	Authenticate(username, password string) (bool, error)
 	Authorize(username, path string, permission config.Permission) (bool, error)
+	GetRootDir(username string) string
 }
 
 // StaticAuthenticator uses static credentials for authentication.
 type StaticAuthenticator struct {
 	Users map[string]config.StaticUser
+	cfg   config.StaticAuthConfig
 }
 
-func NewStaticAuthenticator(users []config.StaticUser) *StaticAuthenticator {
-	userMap := make(map[string]config.StaticUser)
-	for _, user := range users {
-		userMap[user.Username] = user
+func NewStaticAuthenticator(
+	cfg config.StaticAuthConfig,
+) *StaticAuthenticator {
+	var users = make(map[string]config.StaticUser)
+	for _, user := range cfg.Users {
+		users[user.Username] = user
 	}
-	return &StaticAuthenticator{Users: userMap}
+	return &StaticAuthenticator{
+		Users: users,
+		cfg:   cfg,
+	}
 }
 
 func (sa *StaticAuthenticator) Authenticate(username, password string) (bool, error) {
@@ -51,6 +58,14 @@ func (sa *StaticAuthenticator) Authorize(username, path string, permission confi
 		}
 	}
 	return false, nil
+}
+
+func (sa *StaticAuthenticator) GetRootDir(username string) string {
+	user, exists := sa.Users[username]
+	if !exists {
+		return ""
+	}
+	return user.RootDir
 }
 
 func isSubPath(parentPath, subPath string) bool {

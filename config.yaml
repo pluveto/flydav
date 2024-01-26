@@ -84,6 +84,7 @@ services:
 
           - name: bob
             password: $2a$12$LOlhUfqWGsABgwVHmHy2nuMKnTV3rOKBwMY.u.T1pSjnp8Z21j0Cm
+            root: /home/bob
             scopes:
               - path: /shared
                 permissions:

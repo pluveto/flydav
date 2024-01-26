@@ -2,13 +2,14 @@
 package webdav
 
 import (
+	"errors"
 	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/pluveto/flydav/internal/auth"
 	"github.com/pluveto/flydav/internal/config"
 	"github.com/pluveto/flydav/internal/logger"
+	"github.com/pluveto/flydav/pkg/authenticator"
 	"github.com/pluveto/flydav/pkg/storage"
 )
 
@@ -29,10 +30,10 @@ type WebDAVService struct {
 		}
 	*/
 	Storage storage.Storage
-	Auth    *auth.AuthModule
+	Auth    authenticator.Authenticator
 }
 
-func NewWebDAVService(cfg config.WebDAVConfig, storage storage.Storage, auth *auth.AuthModule) *WebDAVService {
+func NewWebDAVService(cfg config.WebDAVConfig, storage storage.Storage, auth authenticator.Authenticator) *WebDAVService {
 	return &WebDAVService{
 		Config:  cfg,
 		Storage: storage,
@@ -48,13 +49,31 @@ func (wds *WebDAVService) RegisterRoutes(router *mux.Router) {
 }
 
 func (wds *WebDAVService) handleWebDAV(w http.ResponseWriter, r *http.Request) {
-	// 检查用户是否已经通过验证
-	if !wds.Auth.IsAuthenticated(r) {
+	username, password, ok := r.BasicAuth()
+	if !ok {
+		w.Header().Set("WWW-Authenticate", `Basic realm="WebDAV"`)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	authenticated, authErr := wds.Auth.Authenticate(username, password)
+	if !authenticated || authErr != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		if authErr != nil {
+			logger.Error("error authenticating user: ", authErr)
+		}
+		return
+	}
 
-	filePath := r.URL.Path
+	// 获取用户的根目录
+	rootDir := wds.Auth.GetRootDir(username)
+	// 确保文件路径是以根目录开始的
+	filePath := rootDir + r.URL.Path
+	// 检查用户是否有权访问该路径
+	hasPermission, err := wds.Auth.Authorize(username, filePath, config.PermissionRead) // or PermissionWrite, depending on the method
+	if err != nil || !hasPermission {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	switch r.Method {
 	case "GET":
@@ -96,8 +115,35 @@ func (wds *WebDAVService) handleWebDAV(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case "COPY", "MOVE":
-		// 你需要解析目标头部（Destination header），然后调用 Storage 的 Move 或者 Copy 方法
-		// ...
+		destination := r.Header.Get("Destination")
+		if destination == "" {
+			http.Error(w, "Destination header missing", http.StatusBadRequest)
+			return
+		}
+
+		// 解析目标路径，并确保它以用户的根目录开始
+		destPath := rootDir + destination
+		// 检查用户是否有权访问目标路径
+		hasPermission, err := wds.Auth.Authorize(username, destPath, config.PermissionWrite)
+		if err != nil || !hasPermission {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		if r.Method == "COPY" {
+			_, err = wds.Storage.Copy(filePath, destPath)
+		} else { // MOVE
+			err = wds.Storage.Move(filePath, destPath)
+		}
+
+		if err != nil {
+			if errors.Is(err, storage.ErrNotFound) {
+				http.Error(w, "Not Found", http.StatusNotFound)
+			} else {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
 
 	case "OPTIONS":
 		// 返回支持的方法

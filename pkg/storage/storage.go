@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -8,6 +9,8 @@ import (
 
 	"github.com/pluveto/flydav/internal/config"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type Storage interface {
 	WriteAll(path string, data []byte) error

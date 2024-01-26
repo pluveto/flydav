@@ -42,10 +42,10 @@ func main() {
 	coreModule := core.NewCoreModule(cfg.Services.Core)
 	coreModule.RegisterRoutes(router)
 
-	webdavModule := webdav.NewWebDAVService(cfg.Services.WebDAV, storage, authModule)
+	webdavModule := webdav.NewWebDAVService(cfg.Services.WebDAV, storage, authModule.Authenticator)
 	webdavModule.RegisterRoutes(router)
 
-	httpIndexModule := http_index.NewHTTPIndexModule(cfg.Services.HTTPIndex, storage, authModule)
+	httpIndexModule := http_index.NewHTTPIndexModule(cfg.Services.HTTPIndex, storage, authModule.Authenticator)
 	httpIndexModule.RegisterRoutes(router)
 
 	uiModule := ui.NewUIModule(cfg.Services.UI)
