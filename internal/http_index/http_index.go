@@ -36,25 +36,25 @@ func NewHTTPIndexModule(cfg config.HTTPIndexConfig, store storage.Storage, auth 
 }
 
 func (his *HTTPIndexModule) RegisterRoutes(router *mux.Router) {
-	logger.Info("Registering HTTP Index module routes on " + his.Config.Path)
+	logger.Info("registering http index module routes on " + his.Config.Path)
 	router.PathPrefix(his.Config.Path).HandlerFunc(his.handleHTTPIndex)
 	router.PathPrefix("/_flydav").HandlerFunc(his.handleStatic)
 }
 
 func (his *HTTPIndexModule) handleStatic(w http.ResponseWriter, r *http.Request) {
 	requestPath, err := his.getRequestPath(r)
-	logger.Info("HTTP Index request for path: " + requestPath)
+	logger.Info("acess static file: " + requestPath)
 	if err != nil {
 		http.Error(w, "Invalid request path", http.StatusBadRequest)
+		logger.Error("invalid request path: ", err)
 		return
 	}
 
-	logger.Info("HTTP Index request for path: " + requestPath)
 	sub, err := fs.Sub(res.Static, "static")
 
 	if err != nil {
 		http.Error(w, "Internal error", http.StatusInternalServerError)
-		logger.Error("Error accessing path: ", err)
+		logger.Error("error accessing path: ", err)
 		return
 	}
 
@@ -69,7 +69,7 @@ type TemplateData struct {
 
 func (his *HTTPIndexModule) handleHTTPIndex(w http.ResponseWriter, r *http.Request) {
 	requestPath, err := his.getRequestPath(r)
-	logger.Info("HTTP Index request for path: " + requestPath)
+	logger.Info("http index request for path: " + requestPath)
 	if err != nil {
 		http.Error(w, "Invalid request path", http.StatusBadRequest)
 		return
@@ -284,6 +284,6 @@ func parseRange(rangeHeader string, fileSize int64) (start, end int64, err error
 }
 
 func (his *HTTPIndexModule) Start() error {
-	logger.Info("Starting HTTP Index module")
+	logger.Info("starting http index module")
 	return nil
 }

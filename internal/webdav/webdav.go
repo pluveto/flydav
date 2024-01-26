@@ -114,6 +114,6 @@ func readRequestBody(r *http.Request) ([]byte, error) {
 }
 
 func (wds *WebDAVModule) Start() error {
-	logger.Info("Starting WebDAV Module")
+	logger.Info("starting web_dav module")
 	return nil
 }

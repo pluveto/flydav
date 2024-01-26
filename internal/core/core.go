@@ -23,6 +23,6 @@ func (cm *CoreModule) RegisterRoutes(router *mux.Router) {
 }
 
 func (cm *CoreModule) Start() error {
-	logger.Info("Starting Core Module")
+	logger.Info("starting core module")
 	return nil
 }

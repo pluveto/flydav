@@ -21,18 +21,18 @@ func main() {
 	// 加载配置文件
 	cfg, err := config.Load("config.yaml")
 	if err != nil {
-		logger.Fatal("Error loading config: ", err)
+		logger.Fatal("error loading config: ", err)
 		os.Exit(1)
 	}
 
 	// 初始化日志系统
 	logger.Init(cfg.Log)
-	logger.Info("Starting FlyDav")
+	logger.Info("starting flydav")
 
 	// 初始化网络监听
 	listener, err := hub.NewListener(cfg.Hub)
 	if err != nil {
-		logger.Fatal("Error creating listener: ", err)
+		logger.Fatal("error creating listener: ", err)
 		os.Exit(1)
 	}
 	router := mux.NewRouter()
@@ -61,7 +61,7 @@ func main() {
 
 	printRoutes(router)
 
-	logger.Info("Listening on ", cfg.Hub.GetListenAddress())
+	logger.Info("listening on ", cfg.Hub.GetListenAddress())
 	log.Fatal(http.Serve(listener, router))
 
 }
@@ -77,5 +77,5 @@ func printRoutes(router *mux.Router) {
 		return nil
 	})
 
-	logger.Info("\nRoutes: \n", s)
+	logger.Info("\n_routes: \n", s)
 }

@@ -26,6 +26,6 @@ func (uis *UIModule) RegisterRoutes(router *mux.Router) {
 }
 
 func (uis *UIModule) Start() error {
-	logger.Info("Starting UI Module")
+	logger.Info("starting ui module")
 	return nil
 }

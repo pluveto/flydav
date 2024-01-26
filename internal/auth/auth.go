@@ -30,7 +30,7 @@ func NewAuthModule(cfg config.AuthConfig) *AuthModule {
 }
 
 func (as *AuthModule) Start() error {
-	logger.Info("Starting Auth Module")
+	logger.Info("starting auth module")
 	return nil
 }
 
