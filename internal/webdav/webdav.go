@@ -12,7 +12,7 @@ import (
 	"github.com/pluveto/flydav/pkg/storage"
 )
 
-type WebDAVModule struct {
+type WebDAVService struct {
 	Config config.WebDAVConfig
 	/*
 		type Storage interface {
@@ -32,22 +32,22 @@ type WebDAVModule struct {
 	Auth    *auth.AuthModule
 }
 
-func NewWebDAVModule(cfg config.WebDAVConfig, storage storage.Storage, auth *auth.AuthModule) *WebDAVModule {
-	return &WebDAVModule{
+func NewWebDAVService(cfg config.WebDAVConfig, storage storage.Storage, auth *auth.AuthModule) *WebDAVService {
+	return &WebDAVService{
 		Config:  cfg,
 		Storage: storage,
 		Auth:    auth,
 	}
 }
 
-func (wds *WebDAVModule) RegisterRoutes(router *mux.Router) {
+func (wds *WebDAVService) RegisterRoutes(router *mux.Router) {
 	router.PathPrefix(wds.Config.Path).
 		Methods("GET", "POST", "PUT", "DELETE", "MKCOL", "COPY", "MOVE", "OPTIONS").
 		HandlerFunc(wds.handleWebDAV)
 
 }
 
-func (wds *WebDAVModule) handleWebDAV(w http.ResponseWriter, r *http.Request) {
+func (wds *WebDAVService) handleWebDAV(w http.ResponseWriter, r *http.Request) {
 	// 检查用户是否已经通过验证
 	if !wds.Auth.IsAuthenticated(r) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -114,7 +114,7 @@ func readRequestBody(r *http.Request) ([]byte, error) {
 	return io.ReadAll(r.Body)
 }
 
-func (wds *WebDAVModule) Start() error {
+func (wds *WebDAVService) Start() error {
 	logger.Info("starting web_dav module")
 	return nil
 }
