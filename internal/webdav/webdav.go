@@ -41,8 +41,9 @@ func NewWebDAVModule(cfg config.WebDAVConfig, storage storage.Storage, auth *aut
 }
 
 func (wds *WebDAVModule) RegisterRoutes(router *mux.Router) {
-	r := router.PathPrefix(wds.Config.Path).Subrouter()
-	r.HandleFunc("/", wds.handleWebDAV).Methods("GET", "POST", "PUT", "DELETE", "MKCOL", "COPY", "MOVE", "OPTIONS")
+	router.PathPrefix(wds.Config.Path).
+		Methods("GET", "POST", "PUT", "DELETE", "MKCOL", "COPY", "MOVE", "OPTIONS").
+		HandlerFunc(wds.handleWebDAV)
 
 }
 

@@ -2,6 +2,8 @@
 package core
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/pluveto/flydav/internal/config"
 	"github.com/pluveto/flydav/internal/logger"
@@ -19,7 +21,18 @@ func NewCoreModule(cfg config.CoreConfig) *CoreModule {
 }
 
 func (cm *CoreModule) RegisterRoutes(router *mux.Router) {
-	// 实现注册路由的逻辑
+	router.HandleFunc("/internal/health", cm.handleHealth).Methods("GET")
+	router.HandleFunc("/", cm.handleRoot).Methods("GET")
+}
+
+func (cm *CoreModule) handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ok"))
+}
+
+func (cm *CoreModule) handleRoot(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("flydav v1.0"))
 }
 
 func (cm *CoreModule) Start() error {

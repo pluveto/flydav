@@ -73,7 +73,17 @@ func printRoutes(router *mux.Router) {
 		if err != nil {
 			logger.Error(err)
 		}
-		s += " - " + path + "\n"
+		methods, err := route.GetMethods()
+		if err != nil {
+			logger.Error(err)
+		}
+
+		method := ""
+		for _, m := range methods {
+			method += m + " "
+		}
+
+		s += " - " + method + path + "\n"
 		return nil
 	})
 

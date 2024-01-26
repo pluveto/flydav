@@ -37,8 +37,8 @@ func NewHTTPIndexModule(cfg config.HTTPIndexConfig, store storage.Storage, auth 
 
 func (his *HTTPIndexModule) RegisterRoutes(router *mux.Router) {
 	logger.Info("registering http index module routes on " + his.Config.Path)
-	router.PathPrefix(his.Config.Path).HandlerFunc(his.handleHTTPIndex)
-	router.PathPrefix("/_flydav").HandlerFunc(his.handleStatic)
+	router.PathPrefix(his.Config.Path).Methods("GET").HandlerFunc(his.handleHTTPIndex)
+	router.PathPrefix("/_flydav").Methods("GET").HandlerFunc(his.handleStatic)
 }
 
 func (his *HTTPIndexModule) handleStatic(w http.ResponseWriter, r *http.Request) {

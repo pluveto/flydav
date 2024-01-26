@@ -21,7 +21,7 @@ func NewUIModule(cfg config.UIConfig) *UIModule {
 }
 
 func (uis *UIModule) RegisterRoutes(router *mux.Router) {
-	router.PathPrefix("/app").Handler(
+	router.PathPrefix(uis.Config.Path).Methods("GET").Handler(
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 }
 
