@@ -130,7 +130,11 @@ func buildDirName(fsDir, subFsDir string) webdav.Dir {
 	if subFsDir == "" {
 		return webdav.Dir(fsDir)
 	}
-	return webdav.Dir(filepath.Join(fsDir, subFsDir))
+	dir := filepath.Join(fsDir, subFsDir)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0755)
+	}
+	return webdav.Dir(dir)
 }
 
 func buildPathPrefix(path, userPrefix string) string {
