@@ -126,7 +126,7 @@ fi
 
 must_run unzip /tmp/flydav_install/flydav.zip -d /tmp/flydav_install
 
-must_run chmod +x /tmp/flydav_install/dist/linux_${ARCH}/flydav
+must_run chmod +x /tmp/flydav_install/flydav
 
 
 DOWNLOAD_CONFIG=1
@@ -181,7 +181,7 @@ EOF
         echo "Please enter a password for $USERNAME:"
         read -r PASSWORD
     done
-    PASSWORD_HASH=$(echo -n "$USERNAME" | sha256sum | cut -d ' ' -f 1)
+    PASSWORD_HASH=$(echo -n "$PASSWORD" | sha256sum | cut -d ' ' -f 1)
 
     FS_DIR=/tmp/flydav
     SUB_FS_DIR=
@@ -259,7 +259,7 @@ EOF
 fi
 
 echo "Installing binary"
-must_run mv "/tmp/flydav_install/dist/linux_${ARCH}/flydav" "/usr/local/bin/flydav"
+must_run mv "/tmp/flydav_install/flydav" "/usr/local/bin/flydav"
 
 # check if service is already installed
 if [ -f /etc/systemd/system/flydav.service ]; then
